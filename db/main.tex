@@ -1,0 +1,372 @@
+
+\documentclass{article}
+\usepackage[russian]{babel}
+\usepackage{amsmath}
+ 
+\usepackage{amssymb}
+
+\usepackage{amsfonts}
+\usepackage{ifsym}
+ 
+\newcommand{\employee}{\textbf{СЛ}}
+\newcommand{\department}{\textbf{ОТД}}
+\newcommand{\depplace}{\textbf{О\_М}}
+\newcommand{\project}{\textbf{ПР}}
+\newcommand{\dependant}{\textbf{ИЖД}}
+\newcommand{\workson}{\textbf{Р\_Н}}
+ 
+\newcommand{\employeeName}{\textbf{СЛ}_\text{Имя}}
+\newcommand{\employeeFirstname}{\textbf{СЛ}_\text{Имя}}
+\newcommand{\employeeLastname}{\textbf{СЛ}_\text{Фамилия}}
+\newcommand{\employeePatroname}{\textbf{СЛ}_\text{Отчество}}
+\newcommand{\employeeId}{\textbf{СЛ}_\text{Код}}
+\newcommand{\employeeGender}{\textbf{СЛ}_\text{Пол}}
+\newcommand{\employeeAddress}{\textbf{СЛ}_\text{Адрес}}
+\newcommand{\employeeSalary}{\textbf{СЛ}_\text{Зарплата}}
+\newcommand{\employeeBday}{\textbf{СЛ}_\text{Дрожд}}
+\newcommand{\employeeDepId}{\textbf{СЛ}_\text{Но}}
+\newcommand{\employeeCuratorId}{\textbf{СЛ}_\text{КодК}}
+ 
+\newcommand{\departmentName}{\textbf{ОТД}_\text{Назв}}
+\newcommand{\departmentId}{\textbf{ОТД}_\text{Но}}
+\newcommand{\departmentBossId}{\textbf{ОТД}_\text{КодР}}
+ 
+\newcommand{\depplaceDep}{\textbf{О\_М}_\text{Но}}
+\newcommand{\depplacePlace}{\textbf{О\_М}_\text{Место}}
+ 
+ 
+\newcommand{\projectName}{\textbf{ПР}_\text{Назв}}
+\newcommand{\projectId}{\textbf{ПР}_\text{Nп}}
+\newcommand{\projectPlace}{\textbf{ПР}_\text{Место}}
+\newcommand{\projectResponsibleDepId}{\textbf{ПР}_\text{Nоо}}
+ 
+\newcommand{\dependantEmpId}{\textbf{ИЖД}_\text{Код}}
+\newcommand{\dependantName}{\textbf{ИЖД}_\text{Имя}}
+\newcommand{\dependantGender}{\textbf{ИЖД}_\text{Пол}}
+\newcommand{\dependantBday}{\textbf{ИЖД}_\text{Дрожд}}
+\newcommand{\dependantRelation}{\textbf{ИЖД}_\text{СтРод}}
+ 
+\newcommand{\worksonEmpId}{\textbf{Р\_Н}_\text{Код}}
+\newcommand{\worksonProjId}{\textbf{Р\_Н}_\text{Nп}}
+\newcommand{\worksonTime}{\textbf{Р\_Н}_\text{Время}}
+
+\newcommand{\filter}[2]{\sigma{}_{#1} \left( #2 \right)}
+\newcommand{\join}[3]{ #1 \bowtie #2; #3 }
+\newcommand{\select}[2]{\Pi_{#1}\left( #2 \right)}
+
+\usepackage{minted}
+
+% hack for russian letters inside minted: https://tex.stackexchange.com/a/343506/293327
+\makeatletter
+\AtBeginEnvironment{minted}{\dontdofcolorbox}
+\def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+\makeatother
+
+\begin{document}
+
+9 из 1+2
+
+6 из 3+4
+
+\section{1.1}
+
+Для каждого проекта, выполняемого в Москве, дать его номер, код и имя руководителя отвечающего отдела, его адрес и дату рождения.
+
+$$A = \sigma{}_{\projectPlace = \text{Москва}}(\project{})$$
+$$B = A \bowtie \department{}; A_{\projectResponsibleDepId} = \departmentId$$
+$$C = B \bowtie \employee{}; B_{\departmentBossId} = \employeeId $$
+$$Output = \Pi_{\projectId; \employeeId; \employeeFirstname; \employeeAddress; \employeeBday}(C)$$
+
+\begin{minted}[autogobble]{sql}
+SELECT ПР.Nп, СЛ.Код, СЛ.Имя, СЛ.Адрес, СЛ.Дрожд
+FROM
+    ПР
+    JOIN ОТ ON ПР.Nоо = ОТ.Nо
+    JOIN СЛ ON ОТ.КодР = СЛ.Код
+WHERE
+    ПР.Место = 'Москва';
+\end{minted}
+
+\section{1.2}
+
+Имена служащих, не имеющих иждивенцев.
+
+$$A = \employee \bowtie \dependant; \employeeId = \dependantEmpId$$
+$$B = \Pi_{\employeeId; \employeeFirstname}(A)$$
+$$C = \Pi_{\employeeId; \employeeFirstname}(\employee)$$
+$$Output = \Pi_{\employeeFirstname} (C \setminus B)$$
+
+\begin{minted}[autogobble]{sql}
+    SELECT Имя
+    FROM
+        (SELECT СЛ.Код, СЛ.Имя FROM СЛ 
+        EXCEPT
+        SELECT СЛ.Код, СЛ.Имя FROM СЛ JOIN ИЖД ON ИЖД.Код = СЛ.Код);
+\end{minted}
+
+\section{1.3}
+
+Имена служащих, не работающих над проектом с названием «Разработать схему»
+
+$$A = \employee \bowtie \workson; \employeeId = \worksonEmpId$$
+$$B = A \bowtie \project; A_{\worksonProjId} = \projectId$$
+$$C = \sigma{}_{\projectName \ne \text{<<Разработать схему>>}}(B)$$
+$$Output = \Pi_{\employeeName}(C)$$
+
+\begin{minted}[autogobble]{sql}
+    SELECT Имя
+    FROM
+        (SELECT СЛ.Код, СЛ.Имя FROM СЛ 
+        EXCEPT
+        SELECT СЛ.Код, СЛ.Имя
+            FROM СЛ
+            JOIN Р_Н ON Р_Н.Код = СЛ.Код
+            JOIN ПР ON Р_Н.Np = ПР.Np
+            WHERE ПР.Назв = "Разработать схему");
+\end{minted}
+
+
+\section{1.4}
+
+Дать список номеров {и названий} тех проектов, в работе над которыми «Иванов» принимает участие либо как служащий, либо как руководитель отдела, отвечающего за проект.
+
+$$People = \sigma_{\employeeLastname = \text{<<Иванов>>}}(\employee)$$
+$$ProjDeps = \department \bowtie \project; \departmentId = \projectResponsibleDepId$$
+$$Bosses = People \bowtie ProjDeps; \employeeId = \departmentBossId$$
+$$Workers = People \bowtie ProjDeps; \employeeDepId = \departmentId$$
+$$Projects = Bosses \cap Workers$$
+$$Output = \select{\projectId; \projectName}{Projects}$$
+ 
+\section{1.5}
+
+Выдать имена кураторов, работающих над проектом вместе с тем, кого он курирует.
+
+$$A = \employee \bowtie \workson; \employeeId = \worksonEmpId$$
+$$B = \employee \bowtie \workson; \employeeId = \worksonEmpId$$
+$$C = A \bowtie B; A\rightarrow\employeeCuratorId = B\rightarrow\employeeId$$
+$$Output = \filter{A\rightarrow\worksonProjId = B\rightarrow\worksonProjId}{C}$$
+
+\section{1.6}
+
+Имена служащих, имеющих, по крайней мере, одного иждивенца.
+
+$$ DependantsAndEmps = \join{\dependant}{\employee}{\dependantEmpId = \employeeId} $$
+$$ Output = \select{\employeeName}{DependantsAndEmps} $$
+
+\section{1.7}
+Имена служащих, работающих в отделе с названием «Информатика» над проектом с названием «Прогресс»
+
+$$ Dep = \filter{\departmentName = \text{<<Информатика>>}}{\department}$$
+$$ Project = \filter{\projectName = \text{<<Прогресс>>}}{\project}$$
+$$ DepEmployee = \join{Dep}{\employee}{\departmentId = \employeeDepId}$$
+$$ DepEmployeeWorksOn = \join{DepEmployee}{\workson}{\employeeId = \worksonEmpId}$$
+$$ DepEmployeeWorksOnProject = \join{DepEmployeeWorksOn}{\project}{\worksonProjId = \projectId}$$
+$$ DepEmployeeWorksOnSpecificProject = \join{DepEmployeeWorksOnProject}{Project}{DepEmployeeWorksOnProject\rightarrow \projectId = Project\rightarrow\projectId}$$
+$$ Output = \select{\employeeName}{DepEmployeeWorksOnSpecificProject}$$
+
+\section{1.8}
+Имена служащих и имена его иждивенцев.
+$$ DependantsAndEmps = \join{\dependant}{\employee}{\dependantEmpId = \employeeId} $$
+$$ Output = \filter{\employeeName; \dependantName}{DependantsAndEmps}$$
+
+\section{1.9}
+Названия проектов, за которые отвечает отдел, руководимый Ивановым
+
+$$ Boss = \filter{\employeeLastname = \text{<<Иванов>>}}{\employee}$$
+$$ Deps = \join{Boss}{\department}{\employeeId = \departmentBossId}$$
+$$ Projects = \join{Deps}{\project}{\departmentId = \projectResponsibleDepId}$$
+$$ Output = \select{\projectName}{Projects}$$
+
+\section{1.10}
+
+Названия отделов, отвечающих за проекты с названием «Принцип …»
+
+$$ Projects = \filter{\projectName = \text{<<Принцип …>>}}{\project} $$
+$$ ProjectsAndDeps = \join{Projects}{\department}{\projectResponsibleDepId = \departmentId}$$
+$$ Output = \select{\departmentName}{ProjectsAndDeps} $$
+
+\section{1.11}
+
+Имена курируемых, работающих в том же отделе что и куратор.
+
+$$ Trainee = \employee$$
+$$ Trainer = \employee$$
+$$ TraineesAndTrainers = \join{Trainee}{Trainer}{Trainee\rightarrow\employeeCuratorId = Trainer\rightarrow\employeeId}$$
+$$ SameDepTTs = \filter{Trainee\rightarrow\employeeDepId = Trainer\rightarrow\employeeDepId}{TraineesAndTrainers}$$
+$$ Output = \select{Trainee\rightarrow\employeeName}{SameDepTTs}$$
+
+\section{1.12}
+
+Названия проектов, выполняемых в месте, в котором размещается отдел, отвечающий за проект.
+
+$$ ProjectsAndDeps = \join{\project}{\department}{\projectResponsibleDepId = \departmentId}$$
+$$ ProjectsAndDepsAndDepPlaces = \join{ProjectsAndDeps}{\depplace}{\departmentId = \depplaceDep}$$
+$$ ProjectsSamePlace = \filter{\projectPlace = \depplacePlace}{ProjectsAndDepsAndDepPlaces}$$
+$$ Output = \select{\projectName}{ProjectsSamePlace}$$
+
+\section{1.13}
+
+Номера проектов, над которыми работает Иванов, но отдел, в котором он работает, не отвечает за проект
+
+$$ Person = \filter{\employeeLastname = \text{<<Иванов>>}}{\employee} $$
+$$ PersonWorkson = \join{Person}{\workson}{\employeeId = \worksonEmpId}$$
+$$ PersonWorksonProject = \join{PersonWorkson}{\project}{\worksonProjId = \projectId}$$
+$$ ProjectRespNotMine = \filter{\employeeDepId \neq \projectResponsibleDepId}{PersonWorksonProject}$$
+$$ Output = \select{\projectId}{ProjectRespNotMine}$$
+
+
+\section{2.1}
+Имена служащих, работающих над всеми проектами, за которые отвечает отдел с названием «Информатика».
+
+$$ Dep = \filter{\departmentName = \text{<<Информатика>>}}{\department}$$
+$$ Projects = \join{Dep}{\project}{\departmentId = \projectResponsibleDepId}$$
+$$ ProjectsOnly = \select{\projectId}{Projects}$$
+$$ PeopleProjectsFullCombo = \employee \times Projects$$
+
+$$ FilteredWorkson = \join{\workson}{ProjectsOnly}{\worksonProjId = \projectId}$$
+$$ PeopleProjectsPresentCombo = \join{\employee}{\workson}{ \worksonEmpId = \employeeId }$$
+
+$$ PeopleProjectsFullIds = \select{\employeeId; \projectId}{PeopleProjectsFullCombo}$$
+$$ PeopleProjectsPresentIds = \select{\employeeId; \worksonProjId \rightarrow \projectId}{PeopleProjectsPresentCombo}$$
+
+$$ PeopleWhoAreNotWorkingOnAllProjects = \select{\employeeId}{PropleProjectsFullIds \setminus PeopleProjectsPresentIds}$$
+$$ PeopleWhoAreYesWorkingOnAllProjects = \select{\employeeId}{\employee} \setminus PeopleWhoAreNotWorkingOnAllProjects$$
+$$ Output = \select{\employeeName}{\join{PeopleWhoAreYesWorkingOnAllProjects}{\employee}{\employeeId = \employeeId}}$$
+
+
+\section{2.2}
+
+Выдать имена руководителей отделов {не} работающих над {всеми / всеми и только} проектами, за которые отдел отвечает.
+
+1. Выдать имена руководителей отделов работающих над проектами, за которые отдел отвечает.
+2. Выдать имена руководителей отделов не работающих над проектами, за которые отдел отвечает.
+3. Выдать имена руководителей отделов работающих над всеми проектами, за которые отдел отвечает.
+4. Выдать имена руководителей отделов не работающих над всеми проектами, за которые отдел отвечает.
+5. Выдать имена руководителей отделов работающих над всеми и только проектами, за которые отдел отвечает.
+6. Выдать имена руководителей отделов не работающих над всеми и только проектами, за которые отдел отвечает.
+
+$$ BossesAndDeps = \join{\employee}{\department}{\employeeId = \departmentBossId}$$
+$$ BDP = \join{BossesAndDeps}{\workson}{\employeeId = \worksonEmpId}$$
+$$ Output_1 = \select{\employeeName}{BDP} $$
+$$ BossesOnProj = \select{\employeeId; \employeeName}{BDP}$$
+$$ AllBosses = \select{\employeeId; \employeeName}{BossesAndDeps}$$
+$$ BossesNotOnProj = AllBosses \setminus BossesOnProj$$
+$$ Output_2 = \select{\employeeName}{BossesNotOnProj}$$
+
+$$ BossProjCombos = \select{\employeeId}{BDP} \times \select{\projectId}{\project}$$
+$$ BossesWithMissingDepProjects = \select{\employeeId}{BossProjCombos \setminus \select{\employeeId; \projectId}{BDP}}$$
+$$ BossesWithAllDepProjects = \select{\employeeId}{BDP} \setminus BossesWithMissingDepProjects$$
+$$ Output_3 = \select{\employeeName}{\join{BossesWithAllDepProjects}{\employee}{\employeeId=\employeeId}}$$
+$$ Output_4 = \select{\employeeName}{\join{BossesWithMissingDepProjects}{\employee}{\employeeId=\employeeId}}$$
+
+$$ EmpProj = \join{\employee}{\workson}{\employeeId = \worksonEmpId}$$
+$$ EmpProjFull = \join{EmpProj}{\project}{\worksonProjId = \projectId}$$
+$$ EmpDepCorrect = \select{\employeeId}{\filter{\employeeDepId = \projectResponsibleDepId}{EmpProjFull}}$$
+
+$$ BossesAllOnlyProj = \join{BossesWithAllDepProjects}{EmpDepCorrect}{\employeeId = \employeeId}$$
+$$ Output_5 = \select{\employeeName}{\join{BossesAllOnlyProj}{\employee}{\employeeId=\employeeId}}$$
+$$ BossesNotAllOnlyProj = \select{\employeeId}{BossesAndDeps} \setminus BossesAllOnlyProj$$
+$$ Output_6 = \select{\employeeName}{\join{BossesNotAllOnlyProj}{\employee}{\employeeId=\employeeId}}$$
+
+\section{2.3}
+Выдать номера проектов, над которыми работают {только / все / только и все} сотрудники отдела, отвечающего за проект.
+
+1. Выдать номера проектов, над которыми работают только сотрудники отдела, отвечающего за проект.
+2. Выдать номера проектов, над которыми работают все сотрудники отдела, отвечающего за проект.
+3. Выдать номера проектов, над которыми работают только и все сотрудники отдела, отвечающего за проект.
+
+$$ EmpProj = \join{\employee}{\workson}{\}$$
+
+\newcommand{\aggregate}[4]{  #1 \mathbb{F}_{#2} \left[AS\ #3 \right] \left( #4 \right)  } 
+% \aggregate{by column}{max(column)}{MaxColumnValue}{from table}
+% min, max, sum, count, avg
+\section{3.1}
+Для любого отдела Название, имя руководителя и количество сотрудников.
+
+$$ DepartmentMemberCounts = \aggregate{\departmentId}{count(1)}{EmployeeCounts}{\employee}$$
+$$ Boss = \employee$$
+$$ DepartmentBossAndMemberCounts = \join{DepartmentMemberCounts}{Boss}{\departmentBossId = Boss\rightarrow\employeeId}$$
+$$ Output = \select{\departmentName; Boss\rightarrow\employeeName; EmployeeCounts}{DepartmentBossAndMemberCounts}$$
+
+\section{3.2}
+Имена служащих, имеющих двух и более иждивенцев.
+
+$$ EmployeeDependentCounts = \aggregate{\dependantEmpId}{count(1)}{DependantCount}{\dependant}$$
+$$ FilteredEDC = \filter{DependantCount \geq 2}{EmployeeDependentCounts}$$
+$$ Employees = \join{FilteredEDC}{\employee}{\dependantEmpId = \employeeId}$$
+$$ Output = \select{\employeeName}{Employees}$$
+
+\section{3.3}
+1. Номера отделов, имя руководителя и имя старейшины отдела.
+2. Номера отделов, имя руководителя и имя старейшины отдела, {если отдел отвечает за 5 проектов}.
+
+старейшины = max age
+
+$$ OldestEmployeeOfDep = \aggregate{\employeeDepId}{min(\employeeBday)}{MinBday}{\employee}$$
+$$ OldestEmpAndDep = \join{OldestEmployeeOfDep}{\department}{\employeeDepId = \departmentId}$$
+$$ Boss = \employee$$
+$$ OldestEmpAndDepAndBoss = \join{OldestEmpAndDep}{Boss}{OldestEmpAndDep\rightarrow\departmentBossId = Boss\rightarrow\employeeId}$$
+$$ Output_1 = \select{\departmentId; Boss\rightarrow\employeeName; OldestEmpAndDep\rightarrow\employeeName}{OldestEmpAndDepAndBoss}$$
+
+$$ DepProjectCounts = \aggregate{\projectResponsibleDepId}{count(1)}{DepProjCount}{\project}$$
+$$ DepProjFilter = \filter{DepProjCount = 5}{DepProjectCounts}$$
+$$ OldestEmpAndDepAndBossFilter = \join{OldestEmpAndDepAndBoss}{DepProjFilter}{OldestEmpAndDepAndBoss\rightarrow\departmentId = DepProjFilter\rightarrow\projectResponsibleDepId}$$
+$$ Output_2 = \select{\departmentId; Boss\rightarrow\employeeName; OldestEmpAndDep\rightarrow\employeeName}{OldestEmpAndDepAndBossFilter}$$
+
+\section{3.4}
+Номера и названия отделов и количество курируемых всеми сотрудниками отдела.
+
+$$CuratorCounts = \aggregate{\employeeCuratorId}{count(1)}{CurCount}{\employee}$$
+$$CuratorAndC = \join{CuratorCounts}{\employee}{CuratorCounts \rightarrow \employeeCuratorId = \employeeId}$$
+$$CountByDep = \aggregate{\employeeDepId}{sum(CurCount)}{CurTotCount}{CuratorAndC}$$
+$$CAndDep = \join{CountByDep}{\department}{\employeeDepId = \departmentId}$$
+$$Output = \select{\departmentId; \departmentName; CurCount}{CAndDep}$$
+
+
+\section{4.1}
+Номера проектов {и время работы над ними}, для которых руководители отвечающего отдела {не имеют / имеют не менее двух} иждивенцев {и все служащие этого отдела работают над проектом {не менее 6-ти часов}}.
+
+1. Номера проектов, для которых руководители отвечающего отдела не имеют иждивенцев.
+2. Номера проектов и время работы над ними, для которых руководители отвечающего отдела не имеют иждивенцев.
+3. Номера проектов и время работы над ними, для которых руководители отвечающего отдела имеют не менее двух иждивенцев.
+4. Номера проектов и время работы над ними, для которых руководители отвечающего отдела имеют не менее двух иждивенцев и все служащие этого отдела работают над проектом.
+5. Номера проектов и время работы над ними, для которых руководители отвечающего отдела имеют не менее двух иждивенцев и все служащие этого отдела работают над проектом не менее 6-ти часов.
+
+
+$$ ProjDep = \join{\project}{\department}{\projectResponsibleDepId = \departmentId} $$
+$$ ProjDepBoss = \join{ProjDep}{\employee}{\departmentBossId = \employeeId} $$
+
+$$ EDC = \aggregate{\dependantEmpId}{count(1)}{DependantCount}{\dependant}$$
+$$ Empties = \select{\employeeId AS \dependantEmpId}{\employee} \times \{0\ AS\ DependantCount\}$$
+$$ EDCAndEmpties = \aggregate{\dependantEmpId}{\sum(DependantCount)}{DependantCount}{EDC \cup Empties}$$
+
+$$ NoDeps = \filter{DependantCount = 0}{EDCAndEmpties}$$
+$$ ProjDepBossNoDeps = \join{ProjDepBoss}{NoDeps}{\employeeId = \dependantEmpId}$$
+$$ Output_1 = \select{\projectId}{ProjDepBossNoDeps}$$
+
+$$ ProjectHours = \aggregate{\worksonProjId}{sum(\worksonTime)}{ProjTime}{\workson}$$
+$$ ProjDepBossNoDepsHours = \join{ProjDepBossNoDeps}{ProjectHours}{\projectId = \worksonProjId}$$
+$$ Output_2 = \select{\projectId; ProjTime}{ProjDepBossNoDepsHours}$$
+
+$$ ManyDeps = \filter{DependantCount \geq 2}{EDCAndEmpties}$$
+$$ ProjDepBossManyDeps = \join{ProjDepBoss}{ManyDeps}{\employeeId = \dependantEmpId}$$
+$$ ProjDepBossManyDepsHours = \join{ProjDepBossManyDeps}{ProjectHours}{\projectId = \worksonProjId}$$
+$$ Output_3 = \select{\projectId; ProjTime}{ProjDepBossManyDepsHours}$$
+
+$$ Worker = \employee$$
+$$ PDBManyDepEmployee = \join{ProjDepBossManyDeps}{Worker}{\departmentId = \employeeDepId}$$
+$$ PDBManyDepEmpWorks = \join{PDBManyDepEmployee}{\workson}{Worker\rightarrow\employeeId = \worksonEmpId}$$
+$$ PDBManyDepEmpWProj = \filter{\projectId = \worksonProjId}{PDBManyDepEmpWorks}$$
+$$ EmpAndProj = \select{\projectId; \employeeId}{PDBManyDepEmpWProj}$$
+$$ CrossEP = \select{\projectId}{PDBManyDepEmpWProj} \times \select{\employeeId}{ProjDepBossManyDepsHours}$$
+$$ ProjsWithMissingEmps = \select{\projectId}{CrossEP \setminus EmpAndProj}$$
+$$ FullProjs = \select{\projectId}{PDBManyDepEmpWProj} \setminus ProjsWithMissingEmps $$
+$$ PDBMDEWPFull = \join{PDBManyDepEmpWProj}{FullProjs}{\projectId = \projectId}$$
+$$ Output_4 = \select{\projectId; ProjTime}{PDBMDEWPFull}$$
+$$ PDBMDEWPFullTime = \filter{\worksonTime \geq 6}{PDBMDEWPFull}$$
+$$ Output_5 = \select{\projectId; ProjTime}{PDBMDEWPFullTime}$$
+
+
+
+\end{document}
+

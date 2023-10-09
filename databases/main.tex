@@ -1,0 +1,330 @@
+\documentclass[12pt]{article}
+\usepackage[T1, T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel} 
+\usepackage{datetime}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+\usepackage{amsfonts}
+\usepackage{ifsym}
+ 
+\newcommand{\employee}{\textbf{СЛ}}
+\newcommand{\department}{\textbf{ОТД}}
+\newcommand{\depplace}{\textbf{О\_М}}
+\newcommand{\project}{\textbf{ПР}}
+\newcommand{\dependant}{\textbf{ИЖД}}
+\newcommand{\workson}{\textbf{Р\_Н}}
+ 
+\newcommand{\employeeName}{\textbf{СЛ}_\text{Имя}}
+\newcommand{\employeeFirstname}{\textbf{СЛ}_\text{Имя}}
+\newcommand{\employeeLastname}{\textbf{СЛ}_\text{Фамилия}}
+\newcommand{\employeePatroname}{\textbf{СЛ}_\text{Отчество}}
+\newcommand{\employeeId}{\textbf{СЛ}_\text{Код}}
+\newcommand{\employeeGender}{\textbf{СЛ}_\text{Пол}}
+\newcommand{\employeeAddress}{\textbf{СЛ}_\text{Адрес}}
+\newcommand{\employeeSalary}{\textbf{СЛ}_\text{Зарплата}}
+\newcommand{\employeeBday}{\textbf{СЛ}_\text{Дрожд}}
+\newcommand{\employeeDepId}{\textbf{СЛ}_\text{Но}}
+\newcommand{\employeeCuratorId}{\textbf{СЛ}_\text{КодК}}
+ 
+\newcommand{\departmentName}{\textbf{ОТД}_\text{Назв}}
+\newcommand{\departmentId}{\textbf{ОТД}_\text{Но}}
+\newcommand{\departmentBossId}{\textbf{ОТД}_\text{КодР}}
+ 
+\newcommand{\depplaceDep}{\textbf{О\_М}_\text{Но}}
+\newcommand{\depplacePlace}{\textbf{О\_М}_\text{Место}}
+ 
+ 
+\newcommand{\projectName}{\textbf{ПР}_\text{Назв}}
+\newcommand{\projectId}{\textbf{ПР}_\text{Nп}}
+\newcommand{\projectPlace}{\textbf{ПР}_\text{Место}}
+\newcommand{\projectResponsibleDepId}{\textbf{ПР}_\text{Nоо}}
+ 
+\newcommand{\dependantEmpId}{\textbf{ИЖД}_\text{Код}}
+\newcommand{\dependantName}{\textbf{ИЖД}_\text{Имя}}
+\newcommand{\dependantGender}{\textbf{ИЖД}_\text{Пол}}
+\newcommand{\dependantBday}{\textbf{ИЖД}_\text{Дрожд}}
+\newcommand{\dependantRelation}{\textbf{ИЖД}_\text{СтРод}}
+ 
+\newcommand{\worksonEmpId}{\textbf{Р\_Н}_\text{Код}}
+\newcommand{\worksonProjId}{\textbf{Р\_Н}_\text{Nп}}
+\newcommand{\worksonTime}{\textbf{Р\_Н}_\text{Время}}
+
+\newcommand{\filter}[2]{\sigma{}_{#1} \allowbreak \left( #2 \right)}
+\newcommand{\join}[3]{ #1 \bowtie #2;\allowbreak #3 }
+\newcommand{\select}[2]{\pi_{#1} \allowbreak \left( #2 \right)}
+\newcommand{\aggregate}[4]{  #1 \mathbb{F}_{#2} \left[AS\ #3 \right] \left( #4 \right)  }
+
+\usepackage{minted}
+
+% hack for russian letters inside minted: https://tex.stackexchange.com/a/343506/293327
+\makeatletter
+\AtBeginEnvironment{minted}{\dontdofcolorbox}
+\def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+\makeatother
+
+\usepackage{tabularx}
+
+\author{Григорий Матюхин}
+\date{\formatdate{8}{10}{2023}}
+\title{Реляционные базы данных. ДЗ}
+
+\begin{document}
+\maketitle
+\newpage
+
+\section{1-е занятие}
+\subsection{6}
+
+Имена служащих, имеющих, по крайней мере, одного иждивенца. \\\\
+$ DependantsAndEmps = \join{\dependant}{\employee}{\dependantEmpId = \employeeId} $ 
+  для иждивенца, его служащий; служащие без иждивенцев не включены  \\ 
+$ Output = \select{\employeeName}{DependantsAndEmps} $ 
+ вывести имена служащих \\ 
+
+\subsection{7}
+Имена служащих, работающих в отделе с названием «Информатика» над проектом с названием «Прогресс»\\\\
+$ Dep = \filter{\departmentName = \text{<<Информатика>>}}{\department}$ 
+ найти отдел \\ 
+$ Project = \filter{\projectName = \text{<<Прогресс>>}}{\project}$ 
+   найти проект \\ 
+$ DepEmployee = \join{Dep}{\employee}{\departmentId = \employeeDepId}$ 
+  все сотрудники в отделе <<Информатика>>  \\ 
+$ DepEmployeeWorksOn = \join{DepEmployee}{\workson}{\employeeId = \worksonEmpId}$ 
+ с информацией о сотруднике   \\ 
+$ DepEmployeeWorksOnProject = \join{DepEmployeeWorksOn}{\project}{\worksonProjId = \projectId}$ 
+  с информацией о проекте  \\ 
+$ DepEmployeeWorksOnSpecificProject = \join{DepEmployeeWorksOnProject}{Project}{DepEmployeeWorksOnProject\rightarrow \projectId = Project\rightarrow\projectId}$ 
+ этот проект должен быть проектом <<Прогресс>> \\ 
+$ Output = \select{\employeeName}{DepEmployeeWorksOnSpecificProject}$ 
+ вывести имена сотрудников из отдела с этим проектом   \\ 
+
+\subsection{8}
+Имена служащих и имена его иждивенцев.\\\\
+$ DependantsAndEmps = \join{\dependant}{\employee}{\dependantEmpId = \employeeId} $ 
+  для каждого иждивенца, имя его сотрудника  \\ 
+$ Output = \filter{\employeeName; \dependantName}{DependantsAndEmps}$ 
+  вывести имена обоих  \\ 
+
+\subsection{9}
+Названия проектов, за которые отвечает отдел, руководимый Ивановым.\\\\
+$ Boss = \filter{\employeeLastname = \text{<<Иванов>>}}{\employee}$ 
+  сотрудник Иванов  \\ 
+$ Deps = \join{Boss}{\department}{\employeeId = \departmentBossId}$ 
+  отделы, для которых он начальник  \\ 
+$ Projects = \join{Deps}{\project}{\departmentId = \projectResponsibleDepId}$ 
+   проекты, для которых он ответственный отдел \\ 
+$ Output = \select{\projectName}{Projects}$ 
+  вывести имена проектов  \\ 
+
+\subsection{10}
+
+Названия отделов, отвечающих за проекты с названием «Принцип …»\\\\
+$ Projects = \filter{\projectName = \text{<<Принцип …>>}}{\project} $ 
+  проекты с названием  \\ 
+$ ProjectsAndDeps = \join{Projects}{\department}{\projectResponsibleDepId = \departmentId}$ 
+ для проектов ответственный отдел   \\ 
+$ Output = \select{\departmentName}{ProjectsAndDeps} $ 
+   только имя отдела \\ 
+
+\subsection{11}
+
+Имена курируемых, работающих в том же отделе что и куратор.\\\\
+$ Trainee = \employee$ 
+ курируемый сотрудник   \\ 
+$ Trainer = \employee$ 
+ куратор сотрудник   \\ 
+$ TraineesAndTrainers = \join{Trainee}{Trainer}{Trainee\rightarrow\employeeCuratorId = Trainer\rightarrow\employeeId}$ 
+ второй сотрудник является куратором для первого  \\ 
+$ SameDepTTs = \filter{Trainee\rightarrow\employeeDepId = Trainer\rightarrow\employeeDepId}{TraineesAndTrainers}$ 
+  проверить, что у двух сотрудников один и тот же отдел  \\ 
+$ Output = \select{Trainee\rightarrow\employeeName}{SameDepTTs}$ 
+   вывести имя курируемого \\ 
+
+\subsection{12}
+
+Названия проектов, выполняемых в месте, в котором размещается отдел, отвечающий за проект.\\\\
+$ ProjectsAndDeps = \join{\project}{\department}{\projectResponsibleDepId = \departmentId}$ 
+    \\ 
+$ ProjectsAndDepsAndDepPlaces = \join{ProjectsAndDeps}{\depplace}{\departmentId = \depplaceDep}$ 
+    \\ 
+$ ProjectsSamePlace = \filter{\projectPlace = \depplacePlace}{ProjectsAndDepsAndDepPlaces}$ 
+    \\ 
+$ Output = \select{\projectName}{ProjectsSamePlace}$ 
+  вывести имя проекта  \\ 
+
+\subsection{13}
+
+Номера проектов, над которыми работает Иванов, но отдел, в котором он работает, не отвечает за проект.\\\\
+$ Person = \filter{\employeeLastname = \text{<<Иванов>>}}{\employee} $ 
+ только Иванов \\ 
+$ PersonWorkson = \join{Person}{\workson}{\employeeId = \worksonEmpId}$ 
+ над какими проектами работает Иванов? \\ 
+$ PersonWorksonProject = \join{PersonWorkson}{\project}{\worksonProjId = \projectId}$ 
+ полная информация об этом проекте \\ 
+$ ProjectRespNotMine = \filter{\employeeDepId \neq \projectResponsibleDepId}{PersonWorksonProject}$ 
+ отдел проекта -- не мой отдел \\ 
+$ Output = \select{\projectId}{ProjectRespNotMine}$ 
+ вывести только номер \\ 
+
+
+
+\section{2-е занятие}
+\subsection{2.3}
+Выдать номера проектов, над которыми работают {только / все / только и все} сотрудники отдела, отвечающего за проект.
+1. Выдать номера проектов, над которыми работают только сотрудники отдела, отвечающего за проект.
+2. Выдать номера проектов, над которыми работают все сотрудники отдела, отвечающего за проект.
+3. Выдать номера проектов, над которыми работают только и все сотрудники отдела, отвечающего за проект.\\\\
+    $ EmpWorks = \join{\employee}{\workson}{\employeeId = \worksonEmpId}$ 
+ сотрудники и номера их проектов \\ 
+    $ EWP = \join{EmpWorks}{\project}{\worksonProjId = \projectId}$ 
+ сотрудники и их проекты \\ 
+    $ EP = \select{\employeeId; \projectId}{EWP}$ 
+ номера всех сотрудников и их проектов \\ 
+    $ EWPSelf = \filter{\employeeDepId = \projectResponsibleDepId}{EWP}$ 
+ те работники, которые работают над проектом своего отдела \\ 
+    $ EPS = \select{\employeeId; \projectId}{EWPSelf}$ 
+ только номера сотрудников и проектов из одного отдела \\ 
+    $ EPNotSelf = EP \setminus EPS$ 
+ те сотрудники, которые работают над проектами не своего отдела, и эти проекты \\  
+    $ PSelf = \select{\projectId}{EPS}$ 
+ проекты, над которыми работает хотя бы кто-то из своего отдела \\ 
+    $ PNotSelf = \select{\projectId}{EPNotSelf}$ 
+ проекты, над которыми работает хотя бы кто-то не из своего отдела \\ 
+    $ Output_1 = PSelf \setminus PNotSelf $ 
+ проекты, над которыми работают люди из своего отдела, и не из какого другого \\ 
+    $ Combos = \select{\employeeId; \employeeDepId}{EWP} \times \select{\projectResponsibleDepId; \projectId}{EWP} $ 
+ все сочетания: (сотрудник и его отдел) и (проект и его отдел) \\ 
+    $ CmbMatch = \filter{\employeeDepId = \projectResponsibleDepId}{Combos}$ 
+ для каждого проекта, только люди которые работают в его отделе (несмотря на то, работают ли они над этим проектом) \\ 
+    $ CMS = \select{\employeeId; \projectId}{CmbMatch}$ 
+ все комбинации проектов и сотрудников, которые из одного отдела \\ 
+    $ MissFull = CMS \setminus EPS$ 
+ только те сотрудники, которые НЕ работают над проектами своего отдела, и проекты над которыми они НЕ работают \\ 
+    $ MissFullProj = \select{\projectId}{MissFull}$ 
+ те проекты, над которыми кто-то из их отдела не работает \\ 
+    $ Output_2 = \filter{\projectId}{\project} \setminus MissFullProj$ 
+ только те проекты, над которыми работают все из их отдела \\ 
+    $ Output_3 = Output_1 \cap Output_2 $ 
+ проекты, над которыми работают все сотрудники их отдела, и никого другого \\ 
+% \aggregate{by column}{max(column)}{MaxColumnValue}{from table}
+% min, max, sum, count, avg
+
+\section{3-е занятие}
+\subsection{5}
+Названия отделов, численность которых больше 10 человек, а средняя зарплата меньше 500 рублей.\\\\
+    $ DepPopulation = \aggregate{\employeeDepId}{count(1)}{Population}{\employee}$ 
+ номер отдела и его население \\ 
+    $ DPFilter = \filter{Population > 10}{DepPopulation}$ 
+ отделы с населением больше 10 \\ 
+    $ DepAvgSal = \aggregate{\employeeDepId}{avg(\employeeSalary)}{AvgSal}{\employee}$ 
+ номер отдела и его средняя зарплата \\ 
+    $ DASFilter = \filter{AvgSal < 500}{DepAvgSal} $ 
+ отделы с средней зарплатой меньше 500 \\ 
+    $ DepsOk = \join{DPFilter}{DASFilter}{\employeeDepId = \employeeDepId}$ 
+ пересечение двух условий \\ 
+    $ DepsOkData = \join{DepsOk}{\department}{\employeeDepId = \departmentId}$ 
+ добавить информацию \\  
+    $ Output = \select{\departmentName}{DepsOkData}$ 
+ только имя \\ 
+
+\subsection{6}
+
+Номера проектов, для которых из всех работающих над ними более половины сотрудники отвечающего отдела.\\\\
+    $ProjWorkers = \aggregate{\worksonProjId}{count(1)}{AllWorkers}{\workson}$ 
+ для каждого проекта, число работников \\ 
+    $ EmpWorksOn = \join{\employee}{\workson}{\employeeId = \worksonEmpId}$ 
+ сотрудники и номера проектов \\ 
+    $ EWOProj = \join{EmpWorksOn}{\project}{\worksonProjId = \projectId}$ 
+ сотрудники и их проекты \\ 
+    $ EWOPFilter = \filter{\employeeDepId = \projectResponsibleDepId}{EWOProj}$ 
+ сотрудники и проекты их отдела \\ 
+    $ ProjWorkersFromSelf = \aggregate{\projectId}{count(1)}{SelfWorkers}{EWOPFilter}$ 
+ количество работников из отдела проекта \\ 
+    $ ProjAWAndSW = \join{ProjWorkers}{ProjWorkersFromSelf}{\worksonProjId = \projectId}$ 
+ номер проекта, кол-во работников всего, и кол-во работников отдела \\ 
+    $ ProjSelfMajority = \filter{\frac{SelfWorkers}{AllWorkers} > 0.5}{ProjAWAndSW} $ 
+ только проекты где своих работников большинство \\ 
+    $ Output = \select{\projectId}{ProjSelfMajority}$ 
+ вывести номера \\ 
+
+\subsection{7}
+
+Названия отделов, в которых более трех служащих имеют двух иждивенцев, родившихся в 2012 году.\\\\
+    $ AgeDeps = \filter{\dependantBday LIKE 2012-??-??}{\dependant}$ 
+ все иждивенцы в 2012 году \\ 
+    $ EmpDepCounts = \aggregate{\dependantEmpId}{count(1)}{DepCount}{AgeDeps}$ 
+ сотрудники и кол-во ижд. из 2012 \\ 
+    $ EDCFilter = \filter{DepCount = 2}{EmpDepCounts}$ 
+ сотрудники с ровно двумя ижд. из 2012 \\ 
+    $ EDCFEmp = \join{EDCFilter}{\employee}{\dependantEmpId = \employeeId}$ 
+ добавить инфу о сотруднике \\ 
+    $ EmpsByDep = \aggregate{\employeeDepId}{count(1)}{EmpCount}{EDCFEmp}$ 
+ посчитать удолетворяющих сотрудников по отделам \\ 
+    $ DepsWithMany = \filter{EmpCount>3}{EmpsByDep}$ 
+ отделы с больше 3 удолетворяющих сотрудников \\ 
+    $ DWMDep = \join{DepsWithMany}{\department}{\employeeDepId = \departmentId}$ 
+ добавить инфу об отделе \\ 
+    $ Output = \select{\departmentName}{DWMDep}$ 
+ вывести названия \\ 
+
+\subsection{8}
+Номера проектов, в работе над которыми наибольшее время затрачивает сотрудник отвечающего отдела.\\\\
+    $ MPT = \aggregate{\worksonProjId}{max(\worksonTime)}{MaxWorkTime}{\workson}$ 
+ какое самое длинное время работают над проектом? \\ 
+    $ MaxWorker = \join{MPT}{\workson}{MPT\rightarrow\worksonProjId = \worksonProjId \wedge  MPT\rightarrow\worksonTime = \worksonTime}$ 
+ кто работает такое время? \\ 
+    $ MWProj = \join{MaxWorker}{\project}{\worksonProjId = \projectId}$ 
+ добавить инфу про проект \\ 
+    $ MWPEmp = \join{MWProj}{\employee}{\worksonEmpId = \employeeId}$ 
+ добавить инфу про сотрудника, который работает самое длинное время над этим проектом \\  
+    $ MWPESelf = \filter{\employeeDepId = \projectResponsibleDepId}{MWPEmp}$ 
+ только те сотрудники, которые из отдела этого проекта \\ 
+    $ Output = \select{\projectId}{MWPESelf}$ 
+ вывести номера \\ 
+
+\subsection{9}
+Номера проектов, в работе над которыми наибольшее время затрачива[ю]т сотрудник[и] отвечающего отдела.\\\\
+    $ EW = \join{\employee}{\workson}{\employeeId = \worksonEmpId}$ 
+ полные сотрудники и проекты, над которыми они работают \\ 
+    $ PDH = \aggregate{\left(\employeeDepId; \worksonProjId\right)}{sum(\worksonTime)}{TotHours}{EW}$ 
+ для каждого проекта и отдела, сколько в сумме работают над проектом сотрудники этого отдела? \\ 
+    $ PDMH = \aggregate{\worksonProjId}{max(TotHours)}{MaxTotHours}{PDH}$ 
+ макс. время, которое отдел проработал над проектом \\ 
+    $ PDMHDep = \join{PDMH}{PDH}{PDMH\rightarrow\worksonProjId = PDH\rightarrow\worksonProjId \wedge PDMH\rightarrow MaxTotHours = PDH\rightarrow TotHours}$ 
+ какой отдел проработал это макс. время? \\ 
+    $ MaxTimeDepProj = \join{PDMHDep}{\project}{PDMHDep\rightarrow\worksonProjId = \projectId}$ 
+ добавить инфу о проекте \\ 
+    $ MTDPFilter = \filter{\projectResponsibleDepId = \employeeDepId}{MaxTimeDepProj}$ 
+ оставить только те отделы, которые отвечают за проект, над которым работали больше остальных отделов \\ 
+    $ Output = \select{\projectId}{MTDPFilter}$ 
+ вывести номера \\ 
+
+\section{4-е занятие}
+\subsection{2}
+
+Номера проектов, имя руководителя отвечающего отдела и количество служащих, работающих над проектом при условии, что руководитель работает над не менее чем 2-мя другими проектами.\\\\
+    $ ProjDeps = \join{\project}{\department}{\projectResponsibleDepId=\departmentId}$ 
+ проект и его отдел \\ 
+    $ PDB = \join{ProjDeps}{\employee}{\departmentBossId = \employeeId}$ 
+ проект, отдел и его начальник \\ 
+    $ ProjEmpCounts = \aggregate{\worksonProjId}{count(1)}{EmpCount}{\workson}$ 
+ для каждого проекта, сколько работают над ним \\ 
+    $ PDBC = \join{PDB}{ProjEmpCounts}{\projectId = \worksonProjId}$ 
+ проект, отдел, начальник и количество служащих у проекта \\ 
+    $ UnfilteredWithCode = \select{\projectId; \employeeId; \employeeName; EmpCount}{PDBC}$ 
+ то, что нужно вывести, плюс код начальника, но без применения условия \\ 
+    $ EmpProjCounts = \aggregate{\worksonEmpId}{count(1)}{BossProjCount}{\workson}$ 
+ для каждого сотрудника, над сколькими проектами он работает \\ 
+    $ EPCBig = \filter{BossProjCount \geq 3}{EmpProjCounts}$ 
+ только те сотрудники, которые работают над одним и ещё двумя проектами \\ 
+    $ UfAndEPC = \join{UnfilteredWithCode}{EPCBig}{UnfilteredWithCode\rightarrow\employeeId = EPCBig\rightarrow\worksonEmpId}$ 
+ только такие проекты, где начальник работает над больше 3 проекта \\ 
+    $ UEPCBossCheck = \join{UfAndEPC}{\workson}{\employeeId = \worksonEmpId; \projectId = \worksonProjId}$ 
+ проекты, где начальник работает над >3 проектов, и один из них -- это данный проект \\ 
+    $ Output = \select{\projectId; \employeeName; EmpCount}{UEPCBossCheck}$ 
+ оставить только имя начальника в выводе \\ 
+
+\end{document}
