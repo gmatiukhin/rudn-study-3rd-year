@@ -4,9 +4,10 @@ import gymnasium as gym
 import grid_world
 
 
-size = 10
-env = gym.make("GridWorld-v0", render_mode="human", size=size)
-q_table = np.zeros([size**4, env.action_space.n])
+size = 5
+n_obstacles = 4
+env = gym.make("GridWorld-v0", render_mode="human", size=size, n_obstacles=n_obstacles)
+q_table = np.zeros([size**4 * (size * size) ** n_obstacles, env.action_space.n])
 
 
 def observation_to_int(obs):
