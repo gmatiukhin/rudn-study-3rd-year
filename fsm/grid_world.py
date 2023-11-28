@@ -3,10 +3,11 @@ import pygame
 
 import gymnasium as gym
 from gymnasium import spaces
+from gymnasium.envs.registration import register
 
 
 class GridWorldEnv(gym.Env):
-    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 120}
 
     def __init__(self, render_mode=None, size=5):
         self.size = size  # The size of the square grid
@@ -16,8 +17,8 @@ class GridWorldEnv(gym.Env):
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
         self.observation_space = spaces.Dict(
             {
-                "agent": spaces.Box(0, size - 1, shape=(2,), dtype=np.int32),
-                "target": spaces.Box(0, size - 1, shape=(2,), dtype=np.int32),
+                "agent": spaces.Box(0, size - 1, shape=(2,), dtype=int),
+                "target": spaces.Box(0, size - 1, shape=(2,), dtype=int),
             }
         )
 
@@ -83,14 +84,21 @@ class GridWorldEnv(gym.Env):
 
     def step(self, action):
         # Map the action (element of {0,1,2,3}) to the direction we walk in
+        old_distance = np.linalg.norm(self._agent_location - self._target_location)
+        old_location = self._agent_location
         direction = self._action_to_direction[action]
         # We use `np.clip` to make sure we don't leave the grid
         self._agent_location = np.clip(
             self._agent_location + direction, 0, self.size - 1
         )
+        new_distance = np.linalg.norm(self._agent_location - self._target_location)
+        new_location = self._agent_location
         # An episode is done iff the agent has reached the target
         terminated = np.array_equal(self._agent_location, self._target_location)
-        reward = 1 if terminated else 0  # Binary sparse rewards
+        reward = old_distance - new_distance
+        if np.array_equal(old_location, new_location):
+            reward -= 5
+
         observation = self._get_obs()
         info = self._get_info()
 
@@ -169,3 +177,10 @@ class GridWorldEnv(gym.Env):
         if self.window is not None:
             pygame.display.quit()
             pygame.quit()
+
+
+register(
+    id="GridWorld-v0",
+    entry_point="grid_world:GridWorldEnv",
+    max_episode_steps=20,
+)

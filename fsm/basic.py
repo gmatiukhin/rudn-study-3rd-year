@@ -1,7 +1,8 @@
 import gymnasium as gym
-import fsm_labs
+import grid_world
 
-env = gym.make("fsm_labs/GridWorld-v0", render_mode="human")
+
+env = gym.make("GridWorld-v0", render_mode="human")
 
 observation, info = env.reset()
 
