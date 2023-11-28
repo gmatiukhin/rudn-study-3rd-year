@@ -1,0 +1,4 @@
+[project]
+name = "fsm_labs"
+version = "0.0.1"
+dependencies = [ "gymnasium", "pygame" ]
