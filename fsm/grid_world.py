@@ -123,6 +123,7 @@ class GridWorldEnv(gym.Env):
             if np.array_equal(new_location, o):
                 reward -= 5
                 new_location = old_location
+                break
 
         self._agent_location = new_location
         observation = self._get_obs()
