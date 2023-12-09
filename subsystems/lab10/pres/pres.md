@@ -26,15 +26,15 @@ section-titles: true
 
 # Выполнение
 
-## LMTP
+# LMTP
 
-### Активация LMTP
+## Активация LMTP
 
 ```bash
 $ sed -i 's/protocols = imap pop3/protocols = imap pop3 lmtp/g' /etc/dovecot/dovecot.conf
 ```
 
-### Конфигурация сервиса для связи с Postfix
+## Конфигурация сервиса для связи с Postfix
 
 Содержимое /etc/dovecot/conf.d/10-master.conf должно включать:
 
@@ -48,28 +48,28 @@ service lmtp {
 }
 ```
 
-### Насройка Postfix
+## Насройка Postfix
 
 ```bash
 $ postconf -e 'mailbox_transport = lmtp:unix:private/dovecot-lmtp
 ```
 
-### Конфигурация формата имени пользователя
+## Конфигурация формата имени пользователя
 
 ```bash
 $ sed -i 's/#auth_username_format = %Lu/auth_username_format = %Ln/g'
 ```
 
-### Перезагрузка и пременение конфигураций
+## Перезагрузка и пременение конфигураций
 
 ```bash
 $ systemctl restart postfix
 $ systemctl restart dovecot
 ```
 
-## SMTP аутентификация
+# SMTP аутентификация
 
-### Определение службы аутентификации
+## Определение службы аутентификации
 
 Содержимое /etc/dovecot/conf.d/10-master.conf должно включать:
 
@@ -87,7 +87,7 @@ service auth {
 }
 ```
 
-### Задаем тип конфигурации и путь к сокету, а так же настраиваем запрет на использование сервера как relay
+## Задаем тип конфигурации и путь к сокету, а так же настраиваем запрет на использование сервера как relay
 
 ```bash
 $ postconf -e 'smtpd_sasl_type = dovecot'
@@ -96,16 +96,16 @@ $ postconf -e 'smtpd_recipient_restrictions = reject_unknown_recipient_domain, p
 $ postconf -e 'mynetworks = 127.0.0.0/8'
 ```
 
-## SMTP over TLS
+# SMTP over TLS
 
-### Используем сертификаты Dovecot
+## Используем сертификаты Dovecot
 
 ```bash
 $ cp /etc/pki/dovecot/certs/dovecot.pem /etc/pki/tls/certs
 $ cp /etc/pki/dovecot/private/dovecot.pem /etc/pki/tls/private
 ```
 
-### Конфигурируем Postfix
+## Конфигурируем Postfix
 
 ```bash
 $ postconf -e 'smtpd_tls_cert_file=/etc/pki/tls/certs/dovecot.pem'
@@ -115,7 +115,7 @@ $ postconf -e 'smtpd_tls_security_level = may'
 $ postconf -e 'smtp_tls_security_level = may'
 ```
 
-### Дальнейшая конфирурация SMTP-сервера
+## Дальнейшая конфирурация SMTP-сервера
 
 Содержимое /etc/postfix/master.cf должно включать:
 
@@ -126,7 +126,7 @@ submission inet n - n - - smtpd
     -o smtpd_recipient_restrictions=reject_non_fqdn_recipient,reject_unknown_recipient_domain,permit_sasl_authenticated,reject
 ```
 
-### Настройка firewalld
+## Настройка firewalld
 
 ```bash
 $ firewall-cmd --add-service=smtp-submission
