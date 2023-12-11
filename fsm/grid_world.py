@@ -7,7 +7,7 @@ from gymnasium.envs.registration import register
 
 
 class GridWorldEnv(gym.Env):
-    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 120}
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 240}
 
     def __init__(self, render_mode=None, size=5, n_obstacles=2):
         self.size = size  # The size of the square grid
@@ -78,21 +78,37 @@ class GridWorldEnv(gym.Env):
         super().reset(seed=seed)
 
         # Choose the agent's location uniformly at random
-        self._agent_location = self.np_random.integers(0, self.size, size=2, dtype=int)
 
-        # We will sample the target's location randomly until it does not coincide with the agent's location
-        self._target_location = self._agent_location
-        while np.array_equal(self._target_location, self._agent_location):
+        taken_locations = []
+        self._obstacles_locations = []
+        for o in self.observation_space["obstacles"].sample((self.n_obstacles, None)):
+            self._obstacles_locations.append(o)
+            taken_locations.append(o)
+
+        while True:
+            self._agent_location = self.np_random.integers(
+                0, self.size, size=2, dtype=int
+            )
+            agent_is_unique = True
+            for t in taken_locations:
+                agent_is_unique = agent_is_unique and not np.array_equal(
+                    self._agent_location, t
+                )
+            if agent_is_unique:
+                break
+        taken_locations.append(self._agent_location)
+
+        while True:
             self._target_location = self.np_random.integers(
                 0, self.size, size=2, dtype=int
             )
-        self._obstacles_locations = []
-        for o in self.observation_space["obstacles"].sample((self.n_obstacles, None)):
-            if not (
-                np.array_equal(o, self._agent_location)
-                or np.array_equal(o, self._target_location)
-            ):
-                self._obstacles_locations.append(o)
+            target_is_unique = True
+            for t in taken_locations:
+                target_is_unique = target_is_unique and not np.array_equal(
+                    self._target_location, t
+                )
+            if target_is_unique:
+                break
 
         observation = self._get_obs()
         info = self._get_info()
@@ -108,24 +124,25 @@ class GridWorldEnv(gym.Env):
         old_location = self._agent_location
         direction = self._action_to_direction[action]
         # We use `np.clip` to make sure we don't leave the grid
-        new_location = np.clip(self._agent_location + direction, 0, self.size - 1)
+        self._agent_location = np.clip(
+            self._agent_location + direction, 0, self.size - 1
+        )
         new_distance = np.linalg.norm(self._agent_location - self._target_location)
         # An episode is done iff the agent has reached the target
         terminated = np.array_equal(self._agent_location, self._target_location)
         reward = old_distance - new_distance
 
         # Don't stay in the same place, dummy
-        if np.array_equal(old_location, new_location):
+        if np.array_equal(old_location, self._agent_location):
             reward -= 5
 
         # Don't move into obstacles
         for o in self._obstacles_locations:
-            if np.array_equal(new_location, o):
+            if np.array_equal(self._agent_location, o):
                 reward -= 5
-                new_location = old_location
+                self._agent_location = old_location
                 break
 
-        self._agent_location = new_location
         observation = self._get_obs()
         info = self._get_info()
 
