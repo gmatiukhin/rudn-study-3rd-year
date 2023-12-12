@@ -1,3 +1,4 @@
+from itertools import pairwise
 import numpy as np
 import pygame
 
@@ -18,15 +19,10 @@ class GridWorldEnv(gym.Env):
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
         self.observation_space = spaces.Dict(
             {
-                "agent": spaces.Box(0, size - 1, shape=(2,), dtype=int),
-                "target": spaces.Box(0, size - 1, shape=(2,), dtype=int),
-                "obstacles": spaces.Sequence(
-                    spaces.Box(
-                        0,
-                        size - 1,
-                        shape=(2,),
-                        dtype=int,
-                    )
+                "agent": spaces.Box(0, size - 1, shape=(2,), dtype=np.int64),
+                "target": spaces.Box(0, size - 1, shape=(2,), dtype=np.int64),
+                "obstacles": spaces.MultiDiscrete(
+                    np.array([size - 1 for _ in range(2 * n_obstacles)]), dtype=np.int64
                 ),
             }
         )
@@ -63,7 +59,7 @@ class GridWorldEnv(gym.Env):
         return {
             "agent": self._agent_location,
             "target": self._target_location,
-            "obstacles": self._obstacles_locations,
+            "obstacles": self._obstacles_locations.flatten(),
         }
 
     def _get_info(self):
@@ -80,10 +76,15 @@ class GridWorldEnv(gym.Env):
         # Choose the agent's location uniformly at random
 
         taken_locations = []
-        self._obstacles_locations = []
-        for o in self.observation_space["obstacles"].sample((self.n_obstacles, None)):
-            self._obstacles_locations.append(o)
+        obstacles_locations = []
+        sample = self.observation_space["obstacles"].sample()
+        for i, (x, y) in enumerate(pairwise(sample)):
+            if i % 2 == 1:
+                continue
+            o = np.array([x, y])
+            obstacles_locations.append(o)
             taken_locations.append(o)
+        self._obstacles_locations = np.array(obstacles_locations)
 
         while True:
             self._agent_location = self.np_random.integers(

@@ -10,8 +10,8 @@ n_episodes = 10000
 
 env = gym.make("GridWorld-v0", render_mode=None, size=size, n_obstacles=n_obstacles)
 shape = [size**2, size**2]
-for _ in range(n_obstacles):
-    shape.append(size**2)
+# for _ in range(n_obstacles):
+#     shape.append(size**2)
 shape.append(env.action_space.n)
 q_table = np.zeros(shape)
 
@@ -20,8 +20,8 @@ def observation_to_idx(obs):
     agent_idx = obs["agent"][0] * size + obs["agent"][1]
     target_idx = obs["target"][0] * size + obs["target"][1]
     idxs = []
-    for o in obs["obstacles"]:
-        idxs.append(o[0] * size + o[1])
+    # for o in obs["obstacles"]:
+    #     idxs.append(o[0] * size + o[1])
     return [agent_idx, target_idx, *idxs]
 
 
