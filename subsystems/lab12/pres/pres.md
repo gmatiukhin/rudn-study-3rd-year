@@ -1,0 +1,121 @@
+---
+lang: ru-RU
+title: Лабораторная работа 12
+author: |
+  Матюхин Григорий, НПИбд-01-21, 1032211403
+institute: |
+	\inst{1}RUDN University, Moscow, Russian Federation
+date: 2023
+
+toc: false
+slide_level: 2
+theme: metropolis
+header-includes: 
+ - \metroset{progressbar=frametitle,sectionpage=progressbar,numbering=fraction}
+ - \usepackage{fvextra}
+ - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+ - '\makeatletter'
+ - '\beamer@ignorenonframefalse'
+ - '\makeatother'
+aspectratio: 43
+section-titles: true
+---
+
+# Цели работы
+Получение навыков по управлению системным временем и настройке синхронизации времени.
+
+# Выполнение
+
+# Утилиты времени
+
+## timedatectl
+
+```bash
+$ timedatectl
+               Local time: Sat 2023-12-16 15:24:44 MSK
+           Universal time: Sat 2023-12-16 12:24:44 UTC
+                 RTC time: Sat 2023-12-16 12:24:44
+                Time zone: Europe/Moscow (MSK, +0300)
+System clock synchronized: yes
+              NTP service: active
+          RTC in local TZ: no
+```
+
+## date
+
+```bash
+$ date
+Sat Dec 16 03:25:49 PM MSK 2023
+$ date +"%H:%M:%S"
+15:26:17
+```
+
+## hwclock
+
+```bash
+$ hwclock
+2023-12-16 15:27:03.952197+03:00
+$ hwclock -v
+hwclock from util-linux 2.39.3
+System Time: 1702729638.420808
+Trying to open: /dev/rtc0
+Using the rtc interface to the clock.
+Assuming hardware clock is kept in UTC time.
+Waiting for clock tick...
+...got clock tick
+Time read from Hardware Clock: 2023/12/16 12:27:19
+Hw clock time : 2023/12/16 12:27:19 = 1702729639 seconds since 1969
+Time since last adjustment is 1702729639 seconds
+Calculated Hardware Clock drift is 0.000000 seconds
+2023-12-16 15:27:18.467388+03:00
+```
+
+# NTP сервер
+
+## Установка
+
+```bash
+$ dnf -y install chrony
+```
+
+```bash
+$ chronyc sources
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^- ntp.truenetwork.ru            2   6    37    47   -560us[-2219us] +/-   79ms
+^- atomail.ru                    2   6    37    48   -102us[-1761us] +/-   30ms
+^- time.cloudflare.com           3   6    37    47   -298us[-1957us] +/-   12ms
+^* ntp.ix.ru                     1   6    37    46    -98us[-1757us] +/- 2335us
+```
+
+## Настройка
+
+```bash
+$ cat >> /etc/chrony.conf
+allow 192.168.0.0/16
+$ systemctl restart chronyd
+$ firewall-cmd --add-service=ntp --permanent
+$ firewall-cmd --reload
+```
+
+```bash
+$ cat >> /etc/chrony.conf
+server server.gmatiukhin.net
+$ systemctl restart chronyd
+```
+
+## Проверка
+
+```bash
+$ chronyc sources
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^- 213.33.141.134                3   6   377     6    -18us[  +12us] +/-   50ms
+^- 195.218.227.230               3   6   377     4   -396us[ -396us] +/-   76ms
+^* ntp1.doorhan.ru               2   6   377     6    +23us[  +54us] +/- 3850us
+^- dynamicip-176-215-178-23>     2   6   377    72  +2710us[+2814us] +/-   54ms
+^- server.gmatiukhin.net         2   6   377     7   +915us[ +945us] +/-   18ms
+```
+
+# Вывод
+Я приобрел навыки по управлению системным временем и настройке синхронизации времени.
