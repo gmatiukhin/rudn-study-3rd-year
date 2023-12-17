@@ -1,0 +1,356 @@
+\documentclass[12pt]{article}
+\usepackage[T1, T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{datetime}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, bending}
+
+\tikzstyle{class} = [circle, text centered, draw, double, double distance=1.5pt, minimum width=1.5cm, minimum height=1.5cm]
+\tikzstyle{instance} = [circle, text centered, draw, minimum width=1.5cm, minimum height=1.5cm]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+\author{Grigorii Matiukhin}
+\title{AI Methods Homeworks}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Homework 1}
+
+\subsection{Predicates}
+\begin{tabular}{|| c | c || }
+  Predicate & Description \\
+  \texttt{on\_top\_of(c1, c2)} & Container \texttt{c1} is on top of \texttt{c2} \\
+  \texttt{on\_floor(c)} & container \texttt{c} is on the floor \\
+  \texttt{topmost(c)} & container \texttt{c} is at the top of the stack, even if it is the only one container in it \\
+  \texttt{in\_stack(c, st)} & container \texttt{c} is in stack \texttt{st} \\
+  \texttt{on\_shore(c)} & container \texttt{c} is on shore \\
+  \texttt{in\_gripper(c)} & container \texttt{c} is in the gripper \\
+  \texttt{on\_ship(c)} & container \texttt{c} is on ship \\
+  \texttt{gripper\_over(st)} & Gripper is above the stack \\
+  \texttt{gripper\_empty} & Whether gripper holds any containers \\
+\end{tabular}
+
+\subsection{Rules}
+\begin{tabular}{|| c | c | c | c || }
+  Rule & Conditions & Adds & Deletes \\
+  \hline\hline
+  \texttt{grab(c)} & \texttt{on\_shore(c)}, \texttt{gripper\_over(st)}, \texttt{topmost(c)}, \texttt{in\_stack(c, st)}, \texttt{gripper\_empty} & \texttt{in\_gripper(c)} & \texttt{on\_shore(c)}, \texttt{gripper\_over(st)}, \texttt{in\_stack(c, st)} \\
+  \hline
+  `hello`
+\end{tabular}
+ 
+
+\section{Homework 2}
+
+\begin{tikzpicture}[node distance=3cm]
+
+  \node (owner) [class] {Owner};
+  \node (predator) [class, below left of=owner] {Predator};
+  \node (prey) [class, below right of=owner] {Prey};
+
+  \node (alice) [instance, above left of=owner] {Alice};
+  \node (bob) [instance, above right of=owner] {Bob};
+
+  \node (cat) [instance, below of=predator] {Cat};
+  \node (bird) [instance, below of=prey] {Bird};
+
+  \draw [arrow] (owner) -- node[anchor=east] {owns} (predator);
+  \draw [arrow] (owner) -- node[anchor=east] {owns} (prey);
+  \draw [arrow] (predator) -- node[anchor=north] {eats} (prey);
+
+  \draw [arrow] (alice) -- node[anchor=east] {ISA} (owner);
+  \draw [arrow] (bob) -- node[anchor=east] {ISA} (owner);
+
+  \draw [arrow] (owner) -- node[anchor=east] {$\neg$ owns} (predator);
+  \draw [arrow] (owner) -- node[anchor=east] {owns} (prey);
+
+  \draw [arrow] (alice) .. controls(-5, -3) .. node[anchor=east] {owns} (cat);
+  \draw [arrow] (bob) .. controls(5, -3) .. node[anchor=east] {owns} (bird);
+
+  \draw [arrow] (cat) -- node[anchor=east] {ISA} (predator);
+  \draw [arrow] (bird) -- node[anchor=east] {ISA} (prey);
+  \draw [arrow] (cat) -- node[anchor=north] {eats} (bird);
+
+\end{tikzpicture}
+
+\section{Homework 3}
+\section{Homework 4}
+
+\subsection{Доказать с помощью метода резолюций, что формула $G$ есть логическое следствие формул $F_1,...,F_n$}
+\subsubsection{а}
+\begin{gather*}
+  F_1 = X \vee Y, F_2 = X \rightarrow Z, G = \left( Y \rightarrow Z \right) \rightarrow Z \\
+  \{X \vee Y, X \rightarrow Z, \overline{\left( Y \rightarrow Z \right) \rightarrow Z } \} \\
+  \{X \vee Y, \overline{X} \vee Z, \overline{  \overline{ Y \rightarrow Z } \vee Z } \} \\
+  \{X \vee Y, \overline{X} \vee Z, \overline{ \left( Y \wedge \overline{Z} \right) \vee Z } \} \\
+  \{X \vee Y, \overline{X} \vee Z, \overline{ \left( Y \vee Z \right) \wedge \left( \overline{Z} \vee Z \right) } \} \\
+  \{X \vee Y, \overline{X} \vee Z, \overline{ Y \vee Z } \} \\
+  \{X \vee Y, \overline{X} \vee Z,  \overline{Y} \wedge \overline{Z} \} \\
+  \{X \vee Y, \overline{X} \vee Z,  \overline{Y} \wedge \overline{Z} \} \\
+  \{X \vee Y, \overline{X} \vee Z,  \overline{Y}, \overline{Z} \} \\
+  \\
+  \frac{X \vee Y, \overline{Y}}{X} \\
+  \{X \vee Y, \overline{X} \vee Z,  \overline{Y}, \overline{Z}, X \} \\
+  \\
+  \frac{\overline{X} \vee Z, X}{Z} \\
+  \{X \vee Y, \overline{X} \vee Z,  \overline{Y}, \overline{Z}, X, Z \} \\
+  \\
+  \frac{\overline{Z}, Z}{\emptyset} \\
+\end{gather*}
+
+\subsubsection{б}
+\begin{gather*}
+  F_1 = X, F_2 = X \wedge Y \rightarrow Z, G = Y \rightarrow Z \\
+  \{X, X \wedge Y \rightarrow Z,  \overline{ Y \rightarrow Z }\} \\
+  \{X, \overline{ X \wedge Y } \vee Z, \overline {\overline{Y} \vee Z }\} \\
+  \{X, \overline{X} \vee \overline{Y} \vee Z, Y \wedge \overline{Z}\} \\
+  \{X, \overline{X} \vee \overline{Y} \vee Z, Y, \overline{Z}\} \\
+  \\
+  \frac{X, \overline{X} \vee \overline{Y} \vee Z}{\overline{Y} \vee Z} \\
+  \{X, \overline{X} \vee \overline{Y} \vee Z, Y, \overline{Z}, \overline{Y} \vee Z\} \\
+  \\
+  \frac{Y, \overline{Y} \vee Z}{Z} \\
+  \{X, \overline{X} \vee \overline{Y} \vee Z, Y, \overline{Z}, \overline{Y} \vee Z, Z\} \\
+  \\
+  \frac{\overline{Z}, Z}{\emptyset} \\
+\end{gather*}
+
+\subsubsection{в}
+\begin{gather*}
+  F_1 = X \rightarrow Y \vee Z, F_2 = Z \rightarrow W, F_3 = \overline{W}, G = X \rightarrow Y \\
+  \{ X \rightarrow Y \vee Z, Z \rightarrow W, \overline{W}, \overline{ X \rightarrow Y} \} \\
+  \{ \overline{X} \vee Y \vee Z, \overline{Z} \vee W, \overline{W}, \overline{ \overline{X} \vee Y} \} \\
+  \{ \overline{X} \vee Y \vee Z, \overline{Z} \vee W, \overline{W}, X \wedge \overline{Y} \} \\
+  \{ \overline{X} \vee Y \vee Z, \overline{Z} \vee W, \overline{W}, X, \overline{Y} \} \\
+  \\
+  \frac{\overline{Z} \vee W, \overline{W}}{\overline{Z}} \\
+  \{ \overline{X} \vee Y \vee Z, \overline{Z} \vee W, \overline{W}, X, \overline{Y}, \overline{Z} \} \\
+  \\
+  \frac{\overline{X} \vee Y \vee Z, X}{Y \vee Z} \\
+  \{ \overline{X} \vee Y \vee Z, \overline{Z} \vee W, \overline{W}, X, \overline{Y}, \overline{Z}, Y \vee Z \} \\
+  \\
+  \frac{\overline{Z}, Y \vee Z}{Y} \\
+  \{ \overline{X} \vee Y \vee Z, \overline{Z} \vee W, \overline{W}, X, \overline{Y}, \overline{Z}, Y \vee Z, Y\} \\
+  \\
+  \frac{\overline{Y}, Y}{\emptyset} \\
+\end{gather*}
+
+\subsubsection{г}
+\begin{gather*}
+  F_1 = X \vee Y \vee \neg Z, F_2 = X \rightarrow X_1, F_3 = Y \rightarrow Y_1, F_4 = Z, G = X_1 \vee Y_1 \\
+  \{X \vee Y \vee \overline{Z}, X \rightarrow X_1, Y \rightarrow Y_1, Z, \overline{X_1 \vee Y_1}\} \\
+  \{X \vee Y \vee \overline{Z}, \overline{X} \vee X_1, \overline{Y} \vee Y_1, Z, \overline{X_1} \wedge \overline{Y_1}\} \\
+  \{X \vee Y \vee \overline{Z}, \overline{X} \vee X_1, \overline{Y} \vee Y_1, Z, \overline{X_1}, \overline{Y_1}\} \\
+  \\
+  \frac{\overline{X} \vee X_1, \overline{X_1}}{\overline{X}} \\
+  \{X \vee Y \vee \neg \overline{Z}, \overline{X} \vee X_1, \overline{Y} \vee Y_1, Z, \overline{X_1}, \overline{Y_1}, \overline{X}\} \\
+  \\
+  \frac{\overline{Y} \vee Y_1, \overline{Y_1}}{\overline{Y}} \\
+  \{X \vee Y \vee \overline{Z}, \overline{X} \vee X_1, \overline{Y} \vee Y_1, Z, \overline{X_1}, \overline{Y_1}, \overline{X}, \overline{Y}\} \\
+  \\
+  \frac{X \vee Y \vee \overline{Z}, \overline{X}}{Y \vee \overline{Z}} \\
+  \{X \vee Y \vee \overline{Z}, \overline{X} \vee X_1, \overline{Y} \vee Y_1, Z, \overline{X_1}, \overline{Y_1}, \overline{X}, \overline{Y}, Y \vee \overline{Z}\} \\
+  \\
+  \frac{Y \vee \overline{Z}, Z}{Y} \\
+  \{X \vee Y \vee \overline{Z}, \overline{X} \vee X_1, \overline{Y} \vee Y_1, Z, \overline{X_1}, \overline{Y_1}, \overline{X}, \overline{Y}, Y \vee \overline{Z}, Y\} \\
+  \\
+  \frac{Y, \overline{Y}}{\emptyset} \\
+\end{gather*}
+
+\subsubsection{д}
+\begin{gather*}
+  F_1 = X Y \rightarrow \overline{X}Z, F_2 = \overline{X \overline{Y}} \vee Z, G = X \rightarrow Z \\
+  \{XY \rightarrow \overline{X}Z, \overline{X \overline{Y}} \vee Z, \overline{X \rightarrow Z}\} \\
+  \{\overline{XY} \vee \overline{X}Z, \overline{X} \vee Y \vee Z, \overline{\overline{X} \vee Z}\} \\
+  \{\overline{XY \wedge \overline{\overline{X}Z}}, \overline{X} \vee Y \vee Z, X \wedge \overline{Z}\} \\
+  \{\overline{XY \wedge X \vee \overline{Z}}, \overline{X} \vee Y \vee Z, X, \overline{Z}\} \\
+  \{\overline{XYX \vee XY\overline{Z}}, \overline{X} \vee Y \vee Z, X, \overline{Z}\} \\
+  \{\overline{XY \vee XY\overline{Z}}, \overline{X} \vee Y \vee Z, X, \overline{Z}\} \\
+  \{\overline{XY \left(1\vee \overline{Z}\right)}, \overline{X} \vee Y \vee Z, X, \overline{Z}\} \\
+  \{\overline{XY}, \overline{X} \vee Y \vee Z, X, \overline{Z}\} \\
+  \{\overline{X} \vee \overline{Y}, \overline{X} \vee Y \vee Z, X, \overline{Z}\} \\
+  \\
+  \frac{\overline{X} \vee \overline{Y}, X}{\overline{Y}} \\
+  \{\overline{X} \vee \overline{Y}, \overline{X} \vee Y \vee Z, X, \overline{Z}, \overline{Y}\} \\
+  \\
+  \frac{\overline{X} \vee Y \vee Z, \overline{Y}}{\overline{X} \vee Z} \\
+  \{\overline{X} \vee \overline{Y}, \overline{X} \vee Y \vee Z, X, \overline{Z}, \overline{Y}, \overline{X} \vee Z\} \\
+  \\
+  \frac{\overline{Z}, \overline{X} \vee Z}{\overline{X}} \\
+  \{\overline{X} \vee \overline{Y}, \overline{X} \vee Y \vee Z, X, \overline{Z}, \overline{Y}, \overline{X} \vee Z, \overline{X}\} \\
+  \\
+  \frac{\overline{X}, X}{\emptyset} \\
+\end{gather*}
+
+\subsubsection{е}
+\begin{gather*}
+  F_1 = X \rightarrow \left( \overline{Y}\left( \overline{Y} \rightarrow Z \right)\right), F_2 = \left(X \rightarrow \overline{Y}\right) \wedge \overline{\left(\overline{X} \wedge \overline{W}\right)}, G = W \vee Z \\
+  \{X \rightarrow \left( \overline{Y}\left( \overline{Y} \rightarrow Z \right)\right), \left(X \rightarrow \overline{Y}\right) \wedge \overline{\left(\overline{X} \wedge \overline{W}\right)}, \overline{W \vee Z}\} \\
+  \{X \rightarrow \left( \overline{Y}\left( Y \vee Z \right)\right), \left(\overline{X} \vee \overline{Y}\right) \wedge \left(X \vee W \right), \overline{W} \wedge \overline{Z}\} \\
+  \{\overline{X} \vee \overline{Y}Y \vee \overline{Y}Z, \overline{X} \vee \overline{Y}, X \vee W, \overline{W}, \overline{Z}\} \\
+  \{\overline{X} \vee \overline{Y}Z, \overline{X} \vee \overline{Y}, X \vee W, \overline{W}, \overline{Z}\} \\
+  \{\left(\overline{X} \vee \overline{Y} \right) \wedge \left(\overline{X} \vee Z \right), \overline{X} \vee \overline{Y}, X \vee W, \overline{W}, \overline{Z}\} \\
+  \{\overline{X} \vee \overline{Y}, \overline{X} \vee Z, \overline{X} \vee \overline{Y}, X \vee W, \overline{W}, \overline{Z}\} \\
+  \\
+  \frac{X \vee W, \overline{W}}{X} \\
+  \{\overline{X} \vee \overline{Y}, \overline{X} \vee Z, \overline{X} \vee \overline{Y}, X \vee W, \overline{W}, \overline{Z}, X\} \\
+  \\
+  \frac{\overline{X} \vee Z, X}{Z} \\
+  \{\overline{X} \vee \overline{Y}, \overline{X} \vee Z, \overline{X} \vee \overline{Y}, X \vee W, \overline{W}, \overline{Z}, X, Z\} \\
+  \\
+  \frac{\overline{Z}, Z}{\emptyset} \\
+\end{gather*}
+
+\subsection{Доказать с помощью метода резолюций, что формула $G$ есть логическое следствие формул $F_1,...,F_n$ }
+\subsubsection{а}
+\begin{gather*}
+  F_1 = \left(\forall x\right)\left(P(x)\rightarrow Q(x)R(X)\right), \\
+  F_2 = \left(\exists x\right)\left(P(x)T(x)\right), \\
+  G = \left(\exists x\right)\left(R(x)T(x)\right) \\
+  \\
+  \{\left(\forall x\right)\left(P(x)\rightarrow Q(x)R(x)\right), \left(\exists x\right)\left(P(x)T(x)\right), \neg\left(\exists x\right)\left(R(x)T(x)\right)\} \\
+  \{\left(\forall x\right)\left(\neg P(x)\vee Q(x)R(x)\right), P(f)T(f), \left(\forall\right)\neg\left(R(x)T(x)\right)\} \\
+  \{\left(\forall x\right)\left(\left(\neg P(x)\vee Q(x)\right)\wedge\left(\neg P(x) \vee R(x)\right)\right), P(f), T(f), \left(\forall\right)\left(\neg R(x)\vee \neg T(x)\right)\} \\
+  \{\neg P(x)\vee Q(x), \neg P(x) \vee R(x), P(f), T(f), \neg R(x)\vee \neg T(x)\} \\
+  \\
+  \frac{\neg P(x) \vee R(x), \neg R(x) \vee \neg T(x)}{\neg P(x) \vee \neg T(x)} \\
+  \{\neg P(x)\vee Q(x), \neg P(x) \vee R(x), P(f), T(f), \neg R(x)\vee \neg T(x), \neg P(x) \vee \neg T(x)\} \\
+  \\
+  \frac{\neg P(x) \vee \neg T(x), T(f)}{\neg P(f)}\left[x/f\right] \\
+  \{\neg P(x)\vee Q(x), \neg P(x) \vee R(x), P(f), T(f), \neg R(x)\vee \neg T(x), \neg P(x) \vee \neg T(x), \neg P(f)\} \\
+  \\
+  \frac{P(f), \neg P(f)}{\emptyset} \\
+\end{gather*}
+
+\subsubsection{б}
+\begin{gather*}
+  F_1 = \left(\forall x\right)\left[\left(\exists y\right)\left(M(y)S(x,y)\right) \rightarrow \left(\exists z\right)\left(I(z)E(x,z)\right)\right], \\
+  G = \neg \left(\exists x\right)I(x)\rightarrow \left(\forall u\right)\left(\forall v\right)\left(S(u, v) \rightarrow M(v)\right) \\
+  \left\{
+    \begin{array}{c}
+  \left(\forall x\right)\left[\left(\exists y\right)\left(M(y)S(x,y)\right) \rightarrow \left(\exists z\right)\left(I(z)E(x,z)\right)\right], \\
+  \neg \left(\neg \left(\exists x\right)I(x)\rightarrow \left(\forall u\right)\left(\forall v\right)\left(S(u, v) \rightarrow M(v)\right)\right)
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+  \left(\forall x\right)\left[\neg\left(\exists y\right)\left(M(y)S(x,y)\right) \vee \left(\exists z\right)\left(I(z)E(x,z)\right)\right], \\
+    \neg \left(\left(\exists x\right)I(x)\vee \left(\forall u\right)\left(\forall v\right)\left(\neg S(u, v) \vee M(v)\right)\right)
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \left(\forall x\right)\left[\left(\forall y\right)\neg\left(M(y)S(x,y)\right) \vee \left(\exists z\right)\left(I(z)E(x,z)\right)\right], \\
+    \neg\left(\exists x\right)I(x)\wedge \neg\left(\left(\forall u\right)\left(\forall v\right)\left(\neg S(u, v) \vee M(v)\right)\right)
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \left(\forall x\right)\left(\forall y\right)\left(\exists z\right)\left[\neg\left(M(y)S(x,y)\right) \vee \left(I(z)E(x,z)\right)\right], \\
+      \left(\forall x\right)\neg I(x)\wedge \left(\left(\exists u\right)\left(\exists v\right)\neg\left(\neg S(u, v) \vee M(v)\right)\right)
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \left(\forall x\right)\left(\forall y\right)\left(\exists z\right)\left[\neg\left(M(y)S(x,y)\right) \vee \left(I(z)E(x,z)\right)\right], \\
+      \left(\forall x\right)\neg I(x)\wedge \left(\left(\exists u\right)\left(\exists v\right)\left(S(u, v) \wedge \neg M(v)\right)\right)
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \left(\forall x\right)\left(\forall y\right)\left(\exists z\right)\left[\neg M(y) \vee \neg S(x,y) \vee \left(I(z)E(x,z)\right)\right], \\
+      \left(\forall x\right)\left(\exists u\right)\left(\exists v\right)\left(\neg I(x)\wedge S(u, v) \wedge \neg M(v)\right)
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \left(\forall x\right)\left(\forall y\right)\left(\exists z\right)\left[\left(\neg M(y) \vee \neg S(x,y) \vee I(z)\right) \wedge \left(\neg M(y) \vee \neg S(x,y) \vee E(x,z)\right)\right], \\
+      \left(\forall x\right)\left(\neg I(x)\wedge S(f(x), g(x)) \wedge \neg M(g(x))\right)
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \left(\forall x\right)\left(\forall y\right)\left[\left(\neg M(y) \vee \neg S(x,y) \vee I(f(x, y))\right) \wedge \left(\neg M(y) \vee \neg S(x,y) \vee E(x,f(x, y))\right)\right], \\
+      \left(\forall x\right)\left(\neg I(x)\wedge S(f(x), g(x)) \wedge \neg M(g(x))\right)
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \neg M(y) \vee \neg S(x,y) \vee I(f(x,y)), \\
+      \neg M(y) \vee \neg S(x,y) \vee E(x,f(x,y)), \\
+      \neg I(x), S(f(x), g(x)), \neg M(g(x))
+    \end{array}
+  \right\} \\
+\end{gather*}
+
+\subsubsection{в}
+\begin{gather*}
+  F_1 = \left(\forall x\right)\left[P(x) \rightarrow \left(\exists y\right)\left(Q(y)S(x, y)\right)\right], \\
+  F_2 = \left(\exists x\right)\left[R(x)\wedge\left(\forall y\right)\left(Q(y)\rightarrow S(x,y)\right)\right], \\
+  F_3 = \left(\exists x\right)P(x), \\
+  G = \left(\exists x\right)\left(\neg P(x) \vee R(x)\right) \\
+  \left\{
+    \begin{array}{c}
+      \left(\forall x\right)\left[P(x) \rightarrow \left(\exists y\right)\left(Q(y)S(x, y)\right)\right], \\
+      \left(\exists x\right)\left[R(x)\wedge\left(\forall y\right)\left(Q(y)\rightarrow S(x,y)\right)\right], \\
+      \left(\exists x\right)P(x), \\
+      \neg\left(\left(\exists x\right)\left(\neg P(x) \vee R(x)\right)\right) \\
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \left(\forall x\right)\left[\neg P(x) \vee \left(\exists y\right)\left(Q(y)S(x, y)\right)\right], \\
+      \left(\exists x\right)\left[R(x)\wedge\left(\forall y\right)\left(\neg Q(y)\vee S(x,y)\right)\right], \\
+      P(f), \\
+      \left(\forall x\right)\neg\left(\neg P(x) \vee R(x)\right) \\
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \left(\forall x\right)\left(\exists y\right)\left[\neg P(x) \vee \left(Q(y)S(x, y)\right)\right], \\
+      \left(\exists x\right)\left(\forall y\right)\left[R(x)\wedge\left(\neg Q(y)\vee S(x,y)\right)\right], \\
+      P(f), \\
+      \left(\forall x\right)\left(P(x) \wedge \neg R(x)\right) \\
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \left(\forall x\right)\left(\exists y\right)\left[\left(\neg P(x) \vee Q(y)\right)\wedge\left(\neg P(x) \vee S(x, y)\right)\right], \\
+      \left(\forall y\right)\left[R(g)\wedge\left(\neg Q(y)\vee S(g,y)\right)\right], \\
+      P(f), \\
+      P(x), \neg R(x) \\
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \left(\forall x\right)\left[\left(\neg P(x) \vee Q(w(x))\right)\wedge\left(\neg P(x) \vee S(x, w(x))\right)\right], \\
+      R(g), \neg Q(y)\vee S(g,y), \\
+      P(f), \\
+      P(x), \neg R(x) \\
+    \end{array}
+  \right\} \\
+  \left\{
+    \begin{array}{c}
+      \neg P(x) \vee Q(w(x)), \neg P(x) \vee S(x, w(x)), \\
+      R(g), \neg Q(y)\vee S(g,y), \\
+      P(f), \\
+      P(x), \neg R(x) \\
+    \end{array}
+  \right\} \\
+  \\
+  \frac{R(g), \neg R(x)}{\emptyset}\left[x/g\right]
+\end{gather*}
+
+
+\section{Homework 5}
+
+\end{document}
