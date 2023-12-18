@@ -45,7 +45,7 @@ style: |
 
 ## Ingress
 
-![w:700px](./images/ingress.jpeg)
+![w:900px](./images/enterprise-grade-IC-OpenShift_topology.png)
 
 ---
 
