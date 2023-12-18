@@ -26,29 +26,177 @@
 \section{Homework 1}
 
 \subsection{Predicates}
-\begin{tabular}{|| c | c || }
-  Predicate & Description \\
-  \texttt{on\_top\_of(c1, c2)} & Container \texttt{c1} is on top of \texttt{c2} \\
-  \texttt{on\_floor(c)} & container \texttt{c} is on the floor \\
-  \texttt{topmost(c)} & container \texttt{c} is at the top of the stack, even if it is the only one container in it \\
-  \texttt{in\_stack(c, st)} & container \texttt{c} is in stack \texttt{st} \\
-  \texttt{on\_shore(c)} & container \texttt{c} is on shore \\
-  \texttt{in\_gripper(c)} & container \texttt{c} is in the gripper \\
-  \texttt{on\_ship(c)} & container \texttt{c} is on ship \\
-  \texttt{gripper\_over(st)} & Gripper is above the stack \\
-  \texttt{gripper\_empty} & Whether gripper holds any containers \\
-\end{tabular}
+\begin{itemize}
+  \item \texttt{on\_top\_of(c1, c2)} --- Container \texttt{c1} is on top of \texttt{c2} 
+  \item \texttt{on\_floor(c)} --- container \texttt{c} is on the floor 
+  \item \texttt{topmost(c)} --- container \texttt{c} is at the top of the stack, even if it is the only one container in it 
+  \item \texttt{bottommost(c)} --- container \texttt{c} is at the bottom of the stack, even if it is the only one container in it 
+  \item \texttt{in\_stack(c, st)} --- container \texttt{c} is in stack \texttt{st} 
+  \item \texttt{in\_gripper(c)} --- container \texttt{c} is in the gripper 
+  \item \texttt{on\_ship(c)} --- container \texttt{c} is on ship 
+  \item \texttt{gripper\_over\_stack(st)} --- Gripper is above the stack 
+  \item \texttt{gripper\_empty} --- Whether gripper holds any containers 
+  \item \texttt{gripper\_not\_empty} --- Whether gripper doesn't hold any containers 
+  \item \texttt{gripper\_over\_ship(s)} --- Whether gripper is over a ship
+\end{itemize}
 
 \subsection{Rules}
-\begin{tabular}{|| c | c | c | c || }
-  Rule & Conditions & Adds & Deletes \\
-  \hline\hline
-  \texttt{grab(c)} & \texttt{on\_shore(c)}, \texttt{gripper\_over(st)}, \texttt{topmost(c)}, \texttt{in\_stack(c, st)}, \texttt{gripper\_empty} & \texttt{in\_gripper(c)} & \texttt{on\_shore(c)}, \texttt{gripper\_over(st)}, \texttt{in\_stack(c, st)} \\
-  \hline
-  `hello`
-\end{tabular}
+\begin{itemize}
+  \item \texttt{move\_gripper\_over\_stack(st, s)}
+    \begin{itemize}
+      \item C: \texttt{gripper\_empty}, \texttt{gripper\_over\_ship(s)}
+      \item A: \texttt{gripper\_over\_stack(st)}
+      \item D: \texttt{gripper\_over\_ship(s)}
+    \end{itemize}
+  \item \texttt{grab(c1, c2, st)}
+    \begin{itemize}
+      \item C: \texttt{gripper\_over\_stack(st)}, \texttt{topmost(c1)}, \texttt{in\_stack(c1, st)}, \texttt{in\_stack(c2, st)}, \texttt{gripper\_empty}, \texttt{on\_top\_of(c1, c2)}
+      \item A: \texttt{in\_gripper(c)}, \texttt{gripper\_not\_empty}, \texttt{topmost(c2)}
+      \item D: \texttt{in\_stack(c, st)}, \texttt{on\_top\_of(c1, c2)}, \texttt{topmost(c1)}
+    \end{itemize}
+  \item \texttt{grab\_bottommost(c, st)}
+    \begin{itemize}
+      \item C: \texttt{gripper\_over\_stack(st)}, \texttt{topmost(c)}, \texttt{in\_stack(c, st)}, \texttt{gripper\_empty}, \texttt{bottommost(c1)}
+      \item A: \texttt{in\_gripper(c)}, \texttt{gripper\_not\_empty}, \texttt{topmost(c2)}
+      \item D: \texttt{in\_stack(c, st)}, \texttt{topmost(c)}, \texttt{bottommost(c)}
+    \end{itemize}
+  \item \texttt{move\_gripper\_to\_ship(s, st)}
+    \begin{itemize}
+      \item C: \texttt{gripper\_not\_empty}, \texttt{gripper\_over\_stack(st)}
+      \item A: \texttt{gripper\_over\_ship(s)}
+      \item D: \texttt{gripper\_over\_stack(st)}
+    \end{itemize}
+  \item \texttt{drop\_container\_on\_ship(c, s)}
+    \begin{itemize}
+      \item C: \texttt{gripper\_not\_empty}, \texttt{in\_gripper(c)}, \texttt{gripper\_over\_ship(s)}
+      \item A: \texttt{on\_ship(c)}
+      \item D: \texttt{in\_gripper(c)}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Simulation}
+\subsubsection{Given}
+\begin{itemize}
+  \item \texttt{in\_stack(c1, st1)}
+  \item \texttt{in\_stack(c2, st1)}
+  \item \texttt{in\_stack(c3, st1)}
+  \item \texttt{in\_stack(c4, st2)}
+  \item \texttt{in\_stack(c5, st2)}
+  \item \texttt{topmost(c1)}
+  \item \texttt{on\_top\_of(c1, c2)}
+  \item \texttt{on\_top\_of(c2, c3)}
+  \item \texttt{bottommost(c3)}
+  \item \texttt{topmost(c4)}
+  \item \texttt{on\_top\_of(c4, c5)}
+  \item \texttt{bottommost(c5)}
+  \item \texttt{gripper\_empty}
+  \item \texttt{gripper\_over\_ship(s)}
+\end{itemize}
+
+\subsubsection{Goals}
+\begin{itemize}
+  \item \texttt{on\_ship(c1)}
+  \item \texttt{on\_ship(c2)}
+  \item \texttt{on\_ship(c3)}
+  \item \texttt{on\_ship(c4)}
+  \item \texttt{on\_ship(c5)}
+  \item \texttt{gripper\_empty}
+\end{itemize}
+
+\subsection{Execution}
+\begin{enumerate}
+  \item Step 1:
+    \begin{itemize}
+      \item Conflict set: \texttt{move\_gripper\_over\_stack(st1, s)}, \texttt{move\_gripper\_over\_stack(st2, s)}
+      \item Action: \texttt{move\_gripper\_over\_stack(st1, s)}
+      \item Result:
+        \begin{itemize}
+          \item \texttt{in\_stack(c1, st1)}
+          \item \texttt{in\_stack(c2, st1)}
+          \item \texttt{in\_stack(c3, st1)}
+          \item \texttt{in\_stack(c4, st2)}
+          \item \texttt{in\_stack(c5, st2)}
+          \item \texttt{topmost(c1)}
+          \item \texttt{on\_top\_of(c1, c2)}
+          \item \texttt{on\_top\_of(c2, c3)}
+          \item \texttt{bottommost(c3)}
+          \item \texttt{topmost(c4)}
+          \item \texttt{on\_top\_of(c4, c5)}
+          \item \texttt{bottommost(c5)}
+          \item \texttt{gripper\_empty}
+          \item \texttt{gripper\_over\_stack(st1)}
+        \end{itemize}
+    \end{itemize}
+  \item Step 2:
+    \begin{itemize}
+      \item Conflict set: \texttt{grab(c1, c2, st1)}
+      \item Action: \texttt{grab(c1, c2, st1)}
+      \item Result:
+        \begin{itemize}
+          \item \texttt{in\_stack(c2, st1)}
+          \item \texttt{in\_stack(c3, st1)}
+          \item \texttt{in\_stack(c4, st2)}
+          \item \texttt{in\_stack(c5, st2)}
+          \item \texttt{topmost(c2)}
+          \item \texttt{on\_top\_of(c1, c2)}
+          \item \texttt{on\_top\_of(c2, c3)}
+          \item \texttt{bottommost(c3)}
+          \item \texttt{topmost(c4)}
+          \item \texttt{on\_top\_of(c4, c5)}
+          \item \texttt{bottommost(c5)}
+          \item \texttt{gripper\_over\_stack(st1)}
+          \item \texttt{in\_gripper(c1)}
+          \item \texttt{gripper\_not\_empty}
+        \end{itemize}
+    \end{itemize}
+  \item Step 3:
+    \begin{itemize}
+      \item Conflict set: \texttt{move\_gripper\_to\_ship(s, st1)}
+      \item Action: \texttt{move\_gripper\_to\_ship(s, st1)}
+      \item Result:
+        \begin{itemize}
+          \item \texttt{in\_stack(c2, st1)}
+          \item \texttt{in\_stack(c3, st1)}
+          \item \texttt{in\_stack(c4, st2)}
+          \item \texttt{in\_stack(c5, st2)}
+          \item \texttt{topmost(c2)}
+          \item \texttt{bottommost(c3)}
+          \item \texttt{on\_top\_of(c1, c2)}
+          \item \texttt{on\_top\_of(c2, c3)}
+          \item \texttt{topmost(c4)}
+          \item \texttt{on\_top\_of(c4, c5)}
+          \item \texttt{bottommost(c5)}
+          \item \texttt{in\_gripper(c1)}
+          \item \texttt{gripper\_not\_empty}
+          \item \texttt{gripper\_over\_ship(s)}
+        \end{itemize}
+    \end{itemize}
+  \item Step 4:
+    \begin{itemize}
+      \item Conflict set: \texttt{drop\_container\_on\_ship(c, s)}
+      \item Action: \texttt{drop\_container\_on\_ship(c, s)}
+      \item Result:
+        \begin{itemize}
+          \item \texttt{in\_stack(c2, st1)}
+          \item \texttt{in\_stack(c3, st1)}
+          \item \texttt{in\_stack(c4, st2)}
+          \item \texttt{in\_stack(c5, st2)}
+          \item \texttt{topmost(c2)}
+          \item \texttt{on\_top\_of(c1, c2)}
+          \item \texttt{on\_top\_of(c2, c3)}
+          \item \texttt{bottommost(c3)}
+          \item \texttt{topmost(c4)}
+          \item \texttt{on\_top\_of(c4, c5)}
+          \item \texttt{bottommost(c5)}
+          \item \texttt{gripper\_empty}
+          \item \texttt{gripper\_over\_ship(s)}
+          \item \texttt{on\_ship(c1)}
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
  
 
+\newpage
 \section{Homework 2}
 
 \begin{tikzpicture}[node distance=3cm]
@@ -82,7 +230,17 @@
 
 \end{tikzpicture}
 
+\newpage
 \section{Homework 3}
+"Red sky at night, sailor's delight. Red sky in the morning, sailor's warning." \\
+"Dew on the grass, no rain will come to pass." \\
+"Seagull, seagull sit on the sand. It's never good weather when you're on land." \\
+"A cow with its tail to the West makes the weather best, a cow with its tail to the East makes the weather least." \\
+"When clouds look like black smoke a wise man will put on his cloak." \\
+"No weather is ill if the wind be still." \\
+"When halo rings the Moon or Sun, rain's approaching on the run."
+
+\newpage
 \section{Homework 4}
 
 \subsection{Доказать с помощью метода резолюций, что формула $G$ есть логическое следствие формул $F_1,...,F_n$}
@@ -234,62 +392,84 @@
 \subsubsection{б}
 \begin{gather*}
   F_1 = \left(\forall x\right)\left[\left(\exists y\right)\left(M(y)S(x,y)\right) \rightarrow \left(\exists z\right)\left(I(z)E(x,z)\right)\right], \\
-  G = \neg \left(\exists x\right)I(x)\rightarrow \left(\forall u\right)\left(\forall v\right)\left(S(u, v) \rightarrow M(v)\right) \\
+  G = \neg \left(\exists x\right)I(x)\rightarrow \left(\forall u\right)\left(\forall v\right)\left(S(u, v) \rightarrow \neg M(v)\right) \\
   \left\{
     \begin{array}{c}
   \left(\forall x\right)\left[\left(\exists y\right)\left(M(y)S(x,y)\right) \rightarrow \left(\exists z\right)\left(I(z)E(x,z)\right)\right], \\
-  \neg \left(\neg \left(\exists x\right)I(x)\rightarrow \left(\forall u\right)\left(\forall v\right)\left(S(u, v) \rightarrow M(v)\right)\right)
+  \neg \left(\neg \left(\exists x\right)I(x)\rightarrow \left(\forall u\right)\left(\forall v\right)\left(S(u, v) \rightarrow \neg M(v)\right)\right)
     \end{array}
   \right\} \\
   \left\{
     \begin{array}{c}
   \left(\forall x\right)\left[\neg\left(\exists y\right)\left(M(y)S(x,y)\right) \vee \left(\exists z\right)\left(I(z)E(x,z)\right)\right], \\
-    \neg \left(\left(\exists x\right)I(x)\vee \left(\forall u\right)\left(\forall v\right)\left(\neg S(u, v) \vee M(v)\right)\right)
+    \neg \left(\left(\exists x\right)I(x)\vee \left(\forall u\right)\left(\forall v\right)\left(\neg S(u, v) \vee \neg M(v)\right)\right)
     \end{array}
   \right\} \\
   \left\{
     \begin{array}{c}
       \left(\forall x\right)\left[\left(\forall y\right)\neg\left(M(y)S(x,y)\right) \vee \left(\exists z\right)\left(I(z)E(x,z)\right)\right], \\
-    \neg\left(\exists x\right)I(x)\wedge \neg\left(\left(\forall u\right)\left(\forall v\right)\left(\neg S(u, v) \vee M(v)\right)\right)
+    \neg\left(\exists x\right)I(x)\wedge \neg\left(\left(\forall u\right)\left(\forall v\right)\neg\left(S(u, v) \wedge M(v)\right)\right)
     \end{array}
   \right\} \\
   \left\{
     \begin{array}{c}
       \left(\forall x\right)\left(\forall y\right)\left(\exists z\right)\left[\neg\left(M(y)S(x,y)\right) \vee \left(I(z)E(x,z)\right)\right], \\
-      \left(\forall x\right)\neg I(x)\wedge \left(\left(\exists u\right)\left(\exists v\right)\neg\left(\neg S(u, v) \vee M(v)\right)\right)
+      \left(\forall x\right)\neg I(x)\wedge \left(\left(\exists u\right)\left(\exists v\right)\left(S(u, v) \wedge M(v)\right)\right)
     \end{array}
   \right\} \\
   \left\{
     \begin{array}{c}
       \left(\forall x\right)\left(\forall y\right)\left(\exists z\right)\left[\neg\left(M(y)S(x,y)\right) \vee \left(I(z)E(x,z)\right)\right], \\
-      \left(\forall x\right)\neg I(x)\wedge \left(\left(\exists u\right)\left(\exists v\right)\left(S(u, v) \wedge \neg M(v)\right)\right)
+      \left(\forall x\right)\neg I(x)\wedge \left(\left(\exists u\right)\left(\exists v\right)\left(S(u, v) \wedge M(v)\right)\right)
     \end{array}
   \right\} \\
   \left\{
     \begin{array}{c}
       \left(\forall x\right)\left(\forall y\right)\left(\exists z\right)\left[\neg M(y) \vee \neg S(x,y) \vee \left(I(z)E(x,z)\right)\right], \\
-      \left(\forall x\right)\left(\exists u\right)\left(\exists v\right)\left(\neg I(x)\wedge S(u, v) \wedge \neg M(v)\right)
+      \left(\forall x\right)\left(\exists u\right)\left(\exists v\right)\left(\neg I(x)\wedge S(u, v) \wedge M(v)\right)
     \end{array}
   \right\} \\
   \left\{
     \begin{array}{c}
       \left(\forall x\right)\left(\forall y\right)\left(\exists z\right)\left[\left(\neg M(y) \vee \neg S(x,y) \vee I(z)\right) \wedge \left(\neg M(y) \vee \neg S(x,y) \vee E(x,z)\right)\right], \\
-      \left(\forall x\right)\left(\neg I(x)\wedge S(f(x), g(x)) \wedge \neg M(g(x))\right)
+      \left(\forall x\right)\left(\neg I(x)\wedge S(f(x), g(x)) \wedge M(g(x))\right)
     \end{array}
   \right\} \\
   \left\{
     \begin{array}{c}
       \left(\forall x\right)\left(\forall y\right)\left[\left(\neg M(y) \vee \neg S(x,y) \vee I(f(x, y))\right) \wedge \left(\neg M(y) \vee \neg S(x,y) \vee E(x,f(x, y))\right)\right], \\
-      \left(\forall x\right)\left(\neg I(x)\wedge S(f(x), g(x)) \wedge \neg M(g(x))\right)
+      \left(\forall x\right)\left(\neg I(x)\wedge S(f(x), g(x)) \wedge M(g(x))\right)
     \end{array}
   \right\} \\
   \left\{
     \begin{array}{c}
       \neg M(y) \vee \neg S(x,y) \vee I(f(x,y)), \\
       \neg M(y) \vee \neg S(x,y) \vee E(x,f(x,y)), \\
-      \neg I(x), S(f(x), g(x)), \neg M(g(x))
+      \neg I(x), S(f(x), g(x)), M(g(x))
     \end{array}
   \right\} \\
+  \\
+  \frac{\neg M(y) \vee \neg S(x, y) \vee I(f(x, y)), M(g(x))}{\neg S(x, y) \vee I(f(x, y))}\left[y/g(x)\right] \\
+  \left\{
+    \begin{array}{c}
+      \neg M(y) \vee \neg S(x,y) \vee I(f(x,y)), \\
+      \neg M(y) \vee \neg S(x,y) \vee E(x,f(x,y)), \\
+      \neg I(x), S(f(x), g(x)), M(g(x)), \\
+      \neg S(x, y) \vee I(f(x, y))
+    \end{array}
+  \right\} \\
+  \\
+  \frac{\neg S(x, y) \vee I(f(x, y)), S(x, y)}{I(f(x, y))} \\
+  \left\{
+    \begin{array}{c}
+      \neg M(y) \vee \neg S(x,y) \vee I(f(x,y)), \\
+      \neg M(y) \vee \neg S(x,y) \vee E(x,f(x,y)), \\
+      \neg I(x), S(f(x), g(x)), M(g(x)), \\
+      \neg S(x, y) \vee I(f(x, y)), I(f(x, y))
+    \end{array}
+  \right\} \\
+  \\
+  \frac{I(f(x, y)), \neg I(x)}{\emptyset}\left[x/f(x, y)\right]
 \end{gather*}
 
 \subsubsection{в}
@@ -350,7 +530,706 @@
   \frac{R(g), \neg R(x)}{\emptyset}\left[x/g\right]
 \end{gather*}
 
-
+\newpage
 \section{Homework 5}
+\subsection{Conditions}
+\begin{itemize}
+  \item \texttt{adjacent(r1, r2)}
+  \item \texttt{box\_in(b, r)}
+  \item \texttt{on\_floor(b)}
+  \item \texttt{topmost(b)}
+  \item \texttt{light\_off(r)}
+  \item \texttt{light\_on(r)}
+  \item \texttt{in(r)}
+  \item \texttt{on\_top(b1, b2)}
+  \item \texttt{holding{b}}
+\end{itemize}
+
+\subsection{Actions}
+\begin{itemize}
+  \item \texttt{step(r1, r2)}
+    \begin{itemize}
+      \item Preconditions: \texttt{in(r1)}, \texttt{adjacent(r1, r2)}
+      \item Result: \texttt{in(r2)}
+    \end{itemize}
+  \item \texttt{pick\_in\_room(r, b1, b2)}
+    \begin{itemize}
+      \item Preconditions: \texttt{in(r)}, \texttt{box\_in(b1, r)}, \texttt{box\_in(b2, r)}, \texttt{on\_top(b1, b2)}, \texttt{topmost(b1)}
+      \item Result: \texttt{not topmost(b1)}, \texttt{topmost(b2)}, \texttt{holding(b1)}
+    \end{itemize}
+  \item \texttt{pick\_floor(r, b)}
+    \begin{itemize}
+      \item Preconditions: \texttt{in(r)}, \texttt{box\_in(b1, r)}, \texttt{on\_floor(b1)}, \texttt{topmost(b1)}
+      \item Result: \texttt{not topmost(b1)}, \texttt{holding(b1)}
+    \end{itemize}
+  \item \texttt{drop(r, b)}
+    \begin{itemize}
+      \item Preconditions: \texttt{in(r)}, \texttt{holding(b)}
+      \item Result: \texttt{topmost(b)}, \texttt{on\_floor(b)}, \texttt{not holding(b)}
+    \end{itemize}
+  \item \texttt{turn\_on\_light(r, b)}
+    \begin{itemize}
+      \item Preconditions: \texttt{in(r)}, \texttt{on\_floor(b)}, \texttt{topmost(b)}, \texttt{light\_off(r)}
+      \item Result: \texttt{light\_on(r)}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Given}
+\begin{itemize}
+  \item \texttt{box\_in(A, 3)}
+  \item \texttt{box\_in(B, 3)}
+  \item \texttt{box\_in(C, 3)}
+  \item \texttt{box\_in(D, 3)}
+  \item \texttt{on\_floor(A)}
+  \item \texttt{on\_top(B, A)}
+  \item \texttt{topmost(B)}
+  \item \texttt{on\_floor(D)}
+  \item \texttt{on\_top(C, D)}
+  \item \texttt{topmost(C)}
+  \item \texttt{light\_off(1)}
+  \item \texttt{light\_off(2)}
+  \item \texttt{light\_off(3)}
+  \item \texttt{in(2)}
+\end{itemize}
+
+\subsubsection{Always}
+\begin{itemize}
+  \item \texttt{adjacent(1,4)}
+  \item \texttt{adjacent(2,4)}
+  \item \texttt{adjacent(3,4)}
+  \item \texttt{adjacent(4,1)}
+  \item \texttt{adjacent(4,2)}
+  \item \texttt{adjacent(4,3)}
+\end{itemize}
+
+\subsection{Goals}
+\begin{itemize}
+  \item \texttt{in(2)}
+  \item \texttt{light\_on(1)}
+  \item \texttt{light\_on(2)}
+  \item \texttt{light\_on(3)}
+  \item \texttt{box\_in(A, 1)}
+  \item \texttt{box\_in(C, 1)}
+  \item \texttt{box\_in(B, 3)}
+  \item \texttt{box\_in(D, 3)}
+  \item \texttt{on\_floor(B)}
+  \item \texttt{topmost(B)}
+  \item \texttt{on\_floor(D)}
+  \item \texttt{topmost(D)}
+  \item \texttt{on\_top(A, C)}
+  \item \texttt{on\_floor(C)}
+  \item \texttt{topmost(A)}
+\end{itemize}
+
+\subsection{Execution}
+\begin{enumerate}
+  \item \texttt{light\_on(1)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} +
+          \item \texttt{light\_on(1)} --
+          \item \texttt{light\_on(2)} --
+          \item \texttt{light\_on(3)} --
+          \item \texttt{box\_in(A, 1)} --
+          \item \texttt{box\_in(C, 1)} --
+          \item \texttt{box\_in(B, 3)} +
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} --
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} --
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} --
+          \item \texttt{topmost(A)} --
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(2, 4)}
+          \item \texttt{step(4, 3)}
+          \item \texttt{pick\_in\_room(3, B, A)}
+          \item \texttt{step(3, 4)}
+          \item \texttt{step(4, 1)}
+          \item \texttt{drop(1, B)}
+          \item \texttt{turn\_on\_light(1, B)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 3)}
+          \item \texttt{box\_in(B, 1)}
+          \item \texttt{box\_in(C, 3)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_top(C, D)}
+          \item \texttt{topmost(C)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_off(2)}
+          \item \texttt{light\_off(3)}
+          \item \texttt{in(1)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{in(2)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} --
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} --
+          \item \texttt{light\_on(3)} --
+          \item \texttt{box\_in(A, 1)} --
+          \item \texttt{box\_in(C, 1)} --
+          \item \texttt{box\_in(B, 3)} --
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} --
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} --
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(1, 4)}
+          \item \texttt{step(4, 2)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 3)}
+          \item \texttt{box\_in(B, 1)}
+          \item \texttt{box\_in(C, 3)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_top(C, D)}
+          \item \texttt{topmost(C)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_off(2)}
+          \item \texttt{light\_off(3)}
+          \item \texttt{in(2)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{light\_on(2)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} +
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} --
+          \item \texttt{light\_on(3)} --
+          \item \texttt{box\_in(A, 1)} --
+          \item \texttt{box\_in(C, 1)} --
+          \item \texttt{box\_in(B, 3)} --
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} --
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} --
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(2, 4)}
+          \item \texttt{step(4, 3)}
+          \item \texttt{pick\_floor(3, A)}
+          \item \texttt{step(3, 4)}
+          \item \texttt{step(4, 2)}
+          \item \texttt{drop(2, A)}
+          \item \texttt{turn\_on\_light(2, A)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 2)}
+          \item \texttt{box\_in(B, 1)}
+          \item \texttt{box\_in(C, 3)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_top(C, D)}
+          \item \texttt{topmost(C)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_on(2)}
+          \item \texttt{light\_off(3)}
+          \item \texttt{in(2)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{light\_on(3)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} +
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} +
+          \item \texttt{light\_on(3)} --
+          \item \texttt{box\_in(A, 1)} --
+          \item \texttt{box\_in(C, 1)} --
+          \item \texttt{box\_in(B, 3)} --
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} --
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} --
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(2, 4)}
+          \item \texttt{step(4, 1)}
+          \item \texttt{pick\_in\_room(3, C, D)}
+          \item \texttt{drop(3, C)}
+          \item \texttt{turn\_on\_light(3, C)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 2)}
+          \item \texttt{box\_in(B, 1)}
+          \item \texttt{box\_in(C, 3)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_floor(C)}
+          \item \texttt{topmost(C)}
+          \item \texttt{topmost(D)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_on(2)}
+          \item \texttt{light\_on(3)}
+          \item \texttt{in(3)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{in(2)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} --
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} +
+          \item \texttt{light\_on(3)} +
+          \item \texttt{box\_in(A, 1)} --
+          \item \texttt{box\_in(C, 1)} --
+          \item \texttt{box\_in(B, 3)} --
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} +
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} +
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(3, 4)}
+          \item \texttt{step(4, 2)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 2)}
+          \item \texttt{box\_in(B, 1)}
+          \item \texttt{box\_in(C, 3)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_floor(C)}
+          \item \texttt{topmost(C)}
+          \item \texttt{topmost(D)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_on(2)}
+          \item \texttt{light\_on(3)}
+          \item \texttt{in(2)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{box\_in(A, 1)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} +
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} +
+          \item \texttt{light\_on(3)} +
+          \item \texttt{box\_in(A, 1)} --
+          \item \texttt{box\_in(C, 1)} --
+          \item \texttt{box\_in(B, 3)} --
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} +
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} +
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{pick\_floor(2, A)}
+          \item \texttt{step(2, 4)}
+          \item \texttt{step(4, 1)}
+          \item \texttt{drop(1, A)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 1)}
+          \item \texttt{box\_in(B, 1)}
+          \item \texttt{box\_in(C, 3)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_floor(C)}
+          \item \texttt{topmost(C)}
+          \item \texttt{topmost(D)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_on(2)}
+          \item \texttt{light\_on(3)}
+          \item \texttt{in(1)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{in(2)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} --
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} +
+          \item \texttt{light\_on(3)} +
+          \item \texttt{box\_in(A, 1)} +
+          \item \texttt{box\_in(C, 1)} --
+          \item \texttt{box\_in(B, 3)} --
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} +
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} +
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(1, 4)}
+          \item \texttt{step(4, 2)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 1)}
+          \item \texttt{box\_in(B, 1)}
+          \item \texttt{box\_in(C, 3)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_floor(C)}
+          \item \texttt{topmost(C)}
+          \item \texttt{topmost(D)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_on(2)}
+          \item \texttt{light\_on(3)}
+          \item \texttt{in(2)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{box\_in(C, 1)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} +
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} +
+          \item \texttt{light\_on(3)} +
+          \item \texttt{box\_in(A, 1)} +
+          \item \texttt{box\_in(C, 1)} --
+          \item \texttt{box\_in(B, 3)} --
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} +
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} +
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(2, 4)}
+          \item \texttt{step(4, 3)}
+          \item \texttt{pick\_floor(3, C)}
+          \item \texttt{step(3, 4)}
+          \item \texttt{step(4, 1)}
+          \item \texttt{drop(1, C)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 1)}
+          \item \texttt{box\_in(B, 1)}
+          \item \texttt{box\_in(C, 1)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_floor(C)}
+          \item \texttt{topmost(C)}
+          \item \texttt{topmost(D)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_on(2)}
+          \item \texttt{light\_on(3)}
+          \item \texttt{in(1)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{in(2)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} --
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} +
+          \item \texttt{light\_on(3)} +
+          \item \texttt{box\_in(A, 1)} +
+          \item \texttt{box\_in(C, 1)} +
+          \item \texttt{box\_in(B, 3)} --
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} +
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} +
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(1, 4)}
+          \item \texttt{step(4, 2)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 1)}
+          \item \texttt{box\_in(B, 1)}
+          \item \texttt{box\_in(C, 1)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_floor(C)}
+          \item \texttt{topmost(C)}
+          \item \texttt{topmost(D)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_on(2)}
+          \item \texttt{light\_on(3)}
+          \item \texttt{in(2)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{box\_in(B, 3)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} +
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} +
+          \item \texttt{light\_on(3)} +
+          \item \texttt{box\_in(A, 1)} +
+          \item \texttt{box\_in(C, 1)} +
+          \item \texttt{box\_in(B, 3)} --
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} +
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} +
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(2, 4)}
+          \item \texttt{step(4, 1)}
+          \item \texttt{pick\_floor(4, B)}
+          \item \texttt{step(1, 4)}
+          \item \texttt{step(4, 3)}
+          \item \texttt{drop(3, B)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 1)}
+          \item \texttt{box\_in(B, 3)}
+          \item \texttt{box\_in(C, 1)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_floor(C)}
+          \item \texttt{topmost(C)}
+          \item \texttt{topmost(D)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_on(2)}
+          \item \texttt{light\_on(3)}
+          \item \texttt{in(3)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{in(2)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} --
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} +
+          \item \texttt{light\_on(3)} +
+          \item \texttt{box\_in(A, 1)} +
+          \item \texttt{box\_in(C, 1)} +
+          \item \texttt{box\_in(B, 3)} +
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} +
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} +
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(1, 4)}
+          \item \texttt{step(4, 2)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 1)}
+          \item \texttt{box\_in(B, 3)}
+          \item \texttt{box\_in(C, 1)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_floor(C)}
+          \item \texttt{topmost(C)}
+          \item \texttt{topmost(D)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_on(2)}
+          \item \texttt{light\_on(3)}
+          \item \texttt{in(2)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{on\_top(A, C)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} +
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} +
+          \item \texttt{light\_on(3)} +
+          \item \texttt{box\_in(A, 1)} +
+          \item \texttt{box\_in(C, 1)} +
+          \item \texttt{box\_in(B, 3)} +
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} +
+          \item \texttt{on\_top(A, C)} --
+          \item \texttt{on\_floor(C)} +
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(2, 4)}
+          \item \texttt{step(2, 1)}
+          \item \texttt{pick\_floor(1, A)}
+          \item \texttt{drop\_on(1, A, C)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 1)}
+          \item \texttt{box\_in(B, 3)}
+          \item \texttt{box\_in(C, 1)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_floor(C)}
+          \item \texttt{topmost(D)}
+          \item \texttt{on\_top(A, C)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_on(2)}
+          \item \texttt{light\_on(3)}
+          \item \texttt{in(1)}
+        \end{itemize}
+    \end{itemize}
+  \item \texttt{in(2)}
+    \begin{itemize}
+      \item Goals:
+        \begin{enumerate}
+          \item \texttt{in(2)} --
+          \item \texttt{light\_on(1)} +
+          \item \texttt{light\_on(2)} +
+          \item \texttt{light\_on(3)} +
+          \item \texttt{box\_in(A, 1)} +
+          \item \texttt{box\_in(C, 1)} +
+          \item \texttt{box\_in(B, 3)} +
+          \item \texttt{box\_in(D, 3)} +
+          \item \texttt{on\_floor(B)} +
+          \item \texttt{topmost(B)} +
+          \item \texttt{on\_floor(D)} +
+          \item \texttt{topmost(D)} +
+          \item \texttt{on\_top(A, C)} +
+          \item \texttt{on\_floor(C)} +
+          \item \texttt{topmost(A)} +
+        \end{enumerate}
+      \item Steps:
+        \begin{enumerate}
+          \item \texttt{step(1, 4)}
+          \item \texttt{step(4, 2)}
+        \end{enumerate}
+      \item State:
+        \begin{itemize}
+          \item \texttt{box\_in(A, 1)}
+          \item \texttt{box\_in(B, 3)}
+          \item \texttt{box\_in(C, 1)}
+          \item \texttt{box\_in(D, 3)}
+          \item \texttt{on\_floor(A)}
+          \item \texttt{topmost(A)}
+          \item \texttt{topmost(B)}
+          \item \texttt{on\_floor(B)}
+          \item \texttt{on\_floor(D)}
+          \item \texttt{on\_floor(C)}
+          \item \texttt{topmost(D)}
+          \item \texttt{on\_top(A, C)}
+          \item \texttt{light\_on(1)}
+          \item \texttt{light\_on(2)}
+          \item \texttt{light\_on(3)}
+          \item \texttt{in(2)}
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
 
 \end{document}
