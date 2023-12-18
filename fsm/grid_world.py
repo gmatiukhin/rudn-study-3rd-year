@@ -8,9 +8,10 @@ from gymnasium.envs.registration import register
 
 
 class GridWorldEnv(gym.Env):
-    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 240}
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
     def __init__(self, render_mode=None, size=5, n_obstacles=2):
+        self.target_tick = True
         self.size = size  # The size of the square grid
         self.window_size = 512  # The size of the PyGame window
         self.n_obstacles = n_obstacles
@@ -120,6 +121,10 @@ class GridWorldEnv(gym.Env):
         return observation, info
 
     def step(self, action):
+        self.target_tick = not self.target_tick
+        if self.target_tick == True:
+            self._target_location[0] += 1
+            self._target_location[0] %= self.size
         # Map the action (element of {0,1,2,3}) to the direction we walk in
         old_distance = np.linalg.norm(self._agent_location - self._target_location)
         old_location = self._agent_location

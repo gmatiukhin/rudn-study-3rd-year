@@ -1,27 +1,38 @@
+from itertools import pairwise
+import pickle
 import random
 import numpy as np
 import gymnasium as gym
 import grid_world
 
 
-size = 5
-n_obstacles = 1
+load = True
+size = 7
+n_obstacles = 2
 n_episodes = 10000
 
 env = gym.make("GridWorld-v0", render_mode=None, size=size, n_obstacles=n_obstacles)
 shape = [size**2, size**2]
-# for _ in range(n_obstacles):
-#     shape.append(size**2)
+for _ in range(n_obstacles):
+    shape.append(size**2)
 shape.append(env.action_space.n)
-q_table = np.zeros(shape)
+
+if load:
+    file = open("q_table.pkl", "rb")
+    q_table = pickle.load(file)
+    file.close()
+else:
+    q_table = np.zeros(shape)
 
 
 def observation_to_idx(obs):
     agent_idx = obs["agent"][0] * size + obs["agent"][1]
     target_idx = obs["target"][0] * size + obs["target"][1]
     idxs = []
-    # for o in obs["obstacles"]:
-    #     idxs.append(o[0] * size + o[1])
+    for i, (x, y) in enumerate(pairwise(obs["obstacles"])):
+        if i % 2 == 1:
+            continue
+        idxs.append(x * size + y)
     return [agent_idx, target_idx, *idxs]
 
 
@@ -69,3 +80,7 @@ for episode in range(1, n_episodes + 1):
         print("---")
         print("episode:", episode)
         print("stats:", ok, total, ok / total)
+
+output = open("q_table.pkl", "wb")
+pickle.dump(q_table, output)
+output.close()
