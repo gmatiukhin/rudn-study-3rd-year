@@ -1,3 +1,4 @@
+*.pth
 *.pkl
 *.zip
 # Byte-compiled / optimized / DLL files
