@@ -44,8 +44,10 @@ class PPO:
 
     def learn(self, total_timesteps):
         t_so_far = 0
+        i_so_far = 0
         while t_so_far < total_timesteps:
-            print(t_so_far, "--->", total_timesteps)
+            i_so_far += 1
+            print(i_so_far, ":", t_so_far, "--->", total_timesteps)
             (
                 batch_obs,
                 batch_acts,
@@ -86,6 +88,9 @@ class PPO:
                 self.critic_optim.zero_grad()
                 critic_loss.backward()
                 self.critic_optim.step()
+            if i_so_far % 1000 == 0:
+                torch.save(self.actor.state_dict(), "./ppo_actor.pth")
+                torch.save(self.critic.state_dict(), "./ppo_critic.pth")
 
         torch.save(self.actor.state_dict(), "./ppo_actor.pth")
         torch.save(self.critic.state_dict(), "./ppo_critic.pth")
