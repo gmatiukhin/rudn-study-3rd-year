@@ -12,6 +12,7 @@
 
 \tikzstyle{class} = [circle, text centered, draw, double, double distance=1.5pt, minimum width=1.5cm, minimum height=1.5cm]
 \tikzstyle{instance} = [circle, text centered, draw, minimum width=1.5cm, minimum height=1.5cm]
+\tikzstyle{semantic_node} = [circle, text centered, draw]
 \tikzstyle{arrow} = [thick,->,>=stealth]
 
 \author{Grigorii Matiukhin}
@@ -199,6 +200,17 @@
 \newpage
 \section{Homework 2}
 
+\begin{itemize}
+  \item Alice owns Charlie.
+  \item Charlie is a cat.
+  \item Cat is a kind of predator.
+  \item Bob owns Squeak.
+  \item Squeak is a bird.
+  \item Bird is a kind of prey.
+  \item Predator eats prey.
+  \item Every owner who owns a prey doesn't own a predator.
+\end{itemize}
+
 \begin{tikzpicture}[node distance=3cm]
 
   \node (owner) [class] {Owner};
@@ -208,8 +220,11 @@
   \node (alice) [instance, above left of=owner] {Alice};
   \node (bob) [instance, above right of=owner] {Bob};
 
-  \node (cat) [instance, below of=predator] {Cat};
-  \node (bird) [instance, below of=prey] {Bird};
+  \node (cat) [class, below of=predator] {Cat};
+  \node (bird) [class, below of=prey] {Bird};
+
+  \node (charlie) [instance, below of=cat] {Charlie};
+  \node (squeak) [instance, below of=bird] {Squeak};
 
   \draw [arrow] (owner) -- node[anchor=east] {owns} (predator);
   \draw [arrow] (owner) -- node[anchor=east] {owns} (prey);
@@ -221,12 +236,16 @@
   \draw [arrow] (owner) -- node[anchor=east] {$\neg$ owns} (predator);
   \draw [arrow] (owner) -- node[anchor=east] {owns} (prey);
 
-  \draw [arrow] (alice) .. controls(-5, -3) .. node[anchor=east] {owns} (cat);
-  \draw [arrow] (bob) .. controls(5, -3) .. node[anchor=east] {owns} (bird);
+  \draw [arrow] (alice) .. controls(-5, -5) .. node[anchor=east] {owns} (charlie);
+  \draw [arrow] (bob) .. controls(5, -5) .. node[anchor=east] {owns} (squeak);
 
-  \draw [arrow] (cat) -- node[anchor=east] {ISA} (predator);
-  \draw [arrow] (bird) -- node[anchor=east] {ISA} (prey);
-  \draw [arrow] (cat) -- node[anchor=north] {eats} (bird);
+  \draw [arrow] (cat) -- node[anchor=east] {AKO} (predator);
+  \draw [arrow] (bird) -- node[anchor=east] {AKO} (prey);
+  % \draw [arrow] (cat) -- node[anchor=north] {eats} (bird);
+
+  \draw [arrow] (charlie) -- node[anchor=east] {ISA} (cat);
+  \draw [arrow] (squeak) -- node[anchor=east] {ISA} (bird);
+  % \draw [arrow] (charlie) -- node[anchor=north] {eats} (squeak);
 
 \end{tikzpicture}
 
@@ -235,10 +254,108 @@
 "Red sky at night, sailor's delight. Red sky in the morning, sailor's warning." \\
 "Dew on the grass, no rain will come to pass." \\
 "Seagull, seagull sit on the sand. It's never good weather when you're on land." \\
-"A cow with its tail to the West makes the weather best, a cow with its tail to the East makes the weather least." \\
 "When clouds look like black smoke a wise man will put on his cloak." \\
 "No weather is ill if the wind be still." \\
-"When halo rings the Moon or Sun, rain's approaching on the run."
+"If ant hills are high in July, the coming winter will be hard." \\
+"When spiders’ webs in air do fly, the spell will soon be very dry." \\
+"Frogs singing in the evening indicates fair weather the next day." \\
+"When squirrels early start to hoard, winter will pierce us like a sword." \\
+"Clear Moon, frost soon."
+
+\subsection{Wheather}
+\begin{enumerate}
+  \item $h_1$ --- rain
+  \item $h_2$ --- no rain
+  \item $h_3$ --- good weather
+  \item $h_4$ --- bad weather
+  \item $h_5$ --- hard winter
+  \item $h_6$ --- frost soon
+  \item $h_7$ --- dry
+\end{enumerate}
+
+\subsection{Tales}
+\begin{enumerate}
+  \item $a_1$ --- red sky at night 
+  \item $a_2$ --- red sky in the morning
+  \item $a_3$ --- dew on grass
+  \item $a_4$ --- seagul sits on land
+  \item $a_5$ --- clouds look like black smoke
+  \item $a_6$ --- still wind
+  \item $a_7$ --- ant hills are hight in July
+  \item $a_8$ --- spiders' webs are flying in the air
+  \item $a_9$ --- frogs are singing
+  \item $a_{10}$ --- squirrels start to hoard early
+  \item $a_{11}$ --- clear moon
+\end{enumerate}
+
+\newpage
+\begin{tikzpicture}[node distance=1.5cm]
+  % Weather
+  \node (rain) [semantic_node] {$h_1$};
+  \node (no_rain) [semantic_node, right of=rain] {$h_2$};
+  \node (good_weather) [semantic_node, right of=no_rain] {$h_3$};
+  \node (bad_weather) [semantic_node, right of=good_weather] {$h_4$};
+  \node (hard_winter) [semantic_node, right of=bad_weather] {$h_5$};
+  \node (frost) [semantic_node, right of=hard_winter] {$h_6$};
+  \node (dry) [semantic_node, right of=frost] {$h_7$};
+
+  % Tales
+  \node (red_sky_night) [semantic_node, below of=rain, yshift=-1.5cm, xshift=-2cm] {$a_1$};
+  \node (red_sky_morning) [semantic_node, right of=red_sky_night] {$a_2$};
+  \node (dew) [semantic_node, right of=red_sky_morning] {$a_3$};
+  \node (seagul_on_land) [semantic_node, right of=dew] {$a_4$};
+  \node (clouds_black_smoke) [semantic_node, right of=seagul_on_land] {$a_5$};
+  \node (still_wind) [semantic_node, right of=clouds_black_smoke] {$a_6$};
+  \node (ant_hills_high) [semantic_node, right of=still_wind] {$a_7$};
+  \node (spiders_webs_fly) [semantic_node, right of=ant_hills_high] {$a_8$};
+  \node (frogs_singing) [semantic_node, right of=spiders_webs_fly] {$a_9$};
+  \node (squirrels_early_hoard) [semantic_node, right of=frogs_singing] {$a_{10}$};
+  \node (clear_moon) [semantic_node, right of=squirrels_early_hoard] {$a_{11}$};
+
+  % Relations
+
+  % R1 
+  \draw [green, arrow] (spiders_webs_fly) -- (dry);
+  \draw [green, arrow] (clouds_black_smoke) -- (rain);
+
+  % R4
+  \draw [blue, arrow] (red_sky_night) -- (good_weather);
+  \draw [blue, arrow] (red_sky_morning) -- (bad_weather);
+  \draw [blue, arrow] (dew) -- (no_rain);
+  \draw [blue, arrow] (seagul_on_land) -- (bad_weather);
+  \draw [blue, arrow] (still_wind) -- (good_weather);
+  \draw [blue, arrow] (ant_hills_high) -- (hard_winter);
+  \draw [blue, arrow] (frogs_singing) -- (good_weather);
+  \draw [blue, arrow] (squirrels_early_hoard) -- (hard_winter);
+  \draw [blue, arrow] (clear_moon) -- (frost);
+
+  \draw [blue, arrow] (no_rain) -- (good_weather);
+  \draw [blue, arrow] (dry) .. controls(7, 1.5) .. (bad_weather);
+  \draw [blue, arrow] (frost) -- (hard_winter);
+  \draw [blue, arrow] (frost) .. controls(6, 1) .. (bad_weather);
+
+  \draw [blue, arrow] (good_weather) -- (dew);
+  \draw [blue, arrow] (bad_weather) -- (clouds_black_smoke);
+
+  % R7
+  \draw [red, arrow] (dew) -- (rain);
+  \draw [red, arrow] (seagul_on_land) -- (good_weather);
+  \draw [red, arrow] (dry) -- (dew);
+\end{tikzpicture}
+
+\begin{gather*}
+  O = \{a_1, a_4, a_6\}, \neg O = \emptyset \\\\ % Rule 2 for all 
+  H = \{h_3, h_4\} \\ % Rule 3 for both
+  M = \{a_3, a_5\} \\
+  Q = \{a_1, a_4, a_6, a_3, a_5\} \\\\ % Q tells us that a_3 isn't observed
+  O = \{a_1, a_4, a_6, a_5\} \\\\
+  H = \{h_1, h_3, h_4\}, S = \{h_1\} \\\\ % Rule 2 for h_2, Rule 1 for h_1
+  % Cannot apply Rule 3
+  H = \{h_1, h_4\} \\ % Rule 5 for h_3 because of a_4
+  Arg(h_1) = \{a_5\} \\
+  Arg(h_4) = \{a_2, a_4\} \\
+  S = \{h_1, h_4\}
+\end{gather*}
 
 \newpage
 \section{Homework 4}
