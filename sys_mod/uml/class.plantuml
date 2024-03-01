@@ -1,0 +1,66 @@
+@startuml
+abstract User {
+  + String name
+  + String description
+}
+
+class UserManager {
+  + User create(name: String, desc: String)
+  + void edit(user: User, desc: String)
+  + void delete(user: User)
+}
+
+class Employer
+
+class Vacancy {
+  + Id id
+  + String name
+  + String description
+  + Decimal salary
+  + bool isClosed
+}
+
+class VacancySystem {
+  + SearchResult search(query: String)
+  + void createVacancy(name: String, desc: String, tags: List<Tag>)
+  + void deleteVacancy(id: Id, name: String, desc: String, tags: List<Tag>)
+  + void deleteVacancy(id: Id)
+}
+
+class Tag {
+  + String name
+}
+
+class Applicant {
+  + void respond(offer_id: Id)
+}
+
+class DB
+
+class SearchEngine {
+  SearchResult search(query: String)
+}
+
+class SearchResult {
+  + List<Vacancy> vacancies
+  + SearchResult filter(tags: List<Tag>)
+}
+
+Applicant --|> User
+Employer --|> User
+
+User <-- UserManager
+UserManager --> DB
+VacancySystem --> DB
+
+Employer --> VacancySystem
+Vacancy "*" --> "1" VacancySystem
+Tag "*" --> "1" Vacancy
+
+Applicant --> SearchEngine
+SearchEngine --> VacancySystem
+
+SearchEngine <-- SearchResult
+Applicant -.-> SearchResult
+
+@enduml
