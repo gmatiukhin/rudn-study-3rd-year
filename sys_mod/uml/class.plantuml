@@ -1,66 +1,87 @@
 @startuml
+allowmixing
+
 abstract User {
+  + Id id
   + String name
   + String description
 }
 
-class UserManager {
-  + User create(name: String, desc: String)
-  + void edit(user: User, desc: String)
-  + void delete(user: User)
-}
+class Applicant
 
 class Employer
+
+class UserManager {
+  + User create(name: String, desc: String)
+  + void editName(userId: Id, name: String)
+  + void editDescription(userId: Id, desc: String)
+  + void delete(userId: Id)
+  + User getUser(userId: Id)
+}
+
+class VacancyManager {
+  + void createVacancy(name: String, desc: String, tags: List<Tag>)
+  + void editVacancy(id: Id, name: String, desc: String, tags: List<Tag>)
+  + void deleteVacancy(id: Id)
+  + List<Vacancy> getVacancies(employerId: Id)
+}
+
+class ResponseManager {
+  + void respond(vacancyId: Id)
+  + List<Id> getRespondees(vacancyId: Id)
+}
 
 class Vacancy {
   + Id id
   + String name
   + String description
-  + Decimal salary
   + bool isClosed
-}
-
-class VacancySystem {
-  + SearchResult search(query: String)
-  + void createVacancy(name: String, desc: String, tags: List<Tag>)
-  + void deleteVacancy(id: Id, name: String, desc: String, tags: List<Tag>)
-  + void deleteVacancy(id: Id)
 }
 
 class Tag {
   + String name
 }
 
-class Applicant {
-  + void respond(offer_id: Id)
-}
-
-class DB
-
 class SearchEngine {
-  SearchResult search(query: String)
+  List<Id> searchEmplyers(query: String)
+  List<Id> searchVacancies(query: String)
+  void applyTagFilter(tags: List<Tag>)
+  void applyEmployerFilter(employerIds: List<Id>)
 }
 
-class SearchResult {
-  + List<Vacancy> vacancies
-  + SearchResult filter(tags: List<Tag>)
+package Database <<Database>> {
+  interface Repository<T> {
+    + T get(id: Id)
+    + Id create(thing: T)
+    + bool update(id: Id, newState: T)
+    + bool delete(id: Id)
+  }
 }
 
-Applicant --|> User
-Employer --|> User
+VacancyRepository --|> Repository:<T::Vacancy>
+UserRepository --|> Repository:<T::User>
 
-User <-- UserManager
-UserManager --> DB
-VacancySystem --> DB
+UserManager --> UserRepository
+VacancyManager --> VacancyRepository
+SearchEngine --> VacancyRepository
+SearchEngine --> UserRepository
+ResponseManager --> VacancyRepository
 
-Employer --> VacancySystem
-Vacancy "*" --> "1" VacancySystem
-Tag "*" --> "1" Vacancy
+Employer -|> User
+Applicant -|> User
+
+User <--> UserManager
+
+Employer --> VacancyManager
+Tag -o Vacancy
 
 Applicant --> SearchEngine
-SearchEngine --> VacancySystem
 
-SearchEngine <-- SearchResult
-Applicant -.-> SearchResult
+VacancyManager -.-> Vacancy
+
+SearchEngine -.-> Vacancy
+
+Applicant --> ResponseManager
+Employer --> ResponseManager
 
 @enduml
