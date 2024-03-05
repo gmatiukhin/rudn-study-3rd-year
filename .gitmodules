@@ -1,3 +1,6 @@
 [submodule "mathmod"]
 	path = mathmod
 	url = https://github.com/gmatiukhin/study_2023-2024_mathmod.git
+[submodule "sys_mod"]
+	path = sys_mod
+	url = https://github.com/gmatiukhin/system-modeling.git
