@@ -1,3 +1,4 @@
+<!-- TODO: add headings to all slides, remove slides with section headings -->
 ---
 marp: true
 theme: uncover
@@ -11,25 +12,20 @@ style: |
 math: mathjax
 ---
 
-## Мультиагентоное планирование с неполной информацией
+## Мультиагентное планирование с неполной информацией
 
 <span style="color: grey">Выполнил:</span> Матюхин Григорий
 
 ---
 
 1. Задача
-1. Понятие "Планирование"
-1. Математическая точка зрения
-1. Алгоритмы
+1. Определения
+1. Алгоритм
 1. Надежность и полнота 
 
 ---
 
-## Кооперативное распределенное уточнительное планировани
-
----
-
-## Ограничения
+## Задача
 
 - Агенты независимы друг от друга
 - Агенты знают не все о своей среде или их знания не верны
@@ -40,37 +36,52 @@ math: mathjax
 
 ---
 
-Planning
-
-Multi-agent plannig 
-
----
-
-- $\mathcal{O}$ -- objects
-- $\mathcal{V}$ -- state variables
-- $\mathcal{D}_v$ -- objects of the planning domain
+<!--  WARN: bad -->
+## Мультиагентное планирование
 
 ---
 
-$$
-\langle v, d\rangle 
-$$
-$$
-\langle v,\neg d\rangle 
-$$
-$$
-(v, d)
-$$
+- $\mathcal{O}$ &mdash; объекты
+- $\mathcal{V}$ &mdash; переменные состояния
+- $\mathcal{D}_v$ &mdash; значения переменных, $\mathcal{D}_v \subseteq \mathcal{O}$
 
-$$
+---
+
+Состояние: $S = \left\{ \langle v_1, d_1\rangle, \langle v_2, \neg d_2\rangle, \ldots, \langle v_n, d_n\rangle \right\}$
+
+<div style="width: 1px; height: 3rem;"></div>
+
+$(v_n, d_n) =$ Истина, если $\langle v_n, d_n \rangle \in S$ 
+$(v_n, d_n) =$ Ложь, если $\langle v_n, \neg d_n \rangle \in S$
+
+---
+
+Информация о $\langle v, d \rangle$ для агента $i$:
+
+- **Полная**: $v \in \mathcal{V}_i, d \in \mathcal{D}_{v_i}$
+- **Частичная**: $v \in \mathcal{V}_i, d \notin \mathcal{D}_{v_i}$,
+    агент видит $\langle v, \bot\rangle$
+- **Нет**: $v \notin \mathcal{V}_i, d \notin \mathcal{D}_{v_i}$
+
+---
+
+Действие: $
 \DeclareMathOperator{\pre}{pre}
 \DeclareMathOperator{\eff}{eff}
-\langle \pre(a), \eff(a)\rangle
-$$
+a = \langle \pre(a), \eff(a)\rangle
+$
+
+<div style="width: 1px; height: 3rem;"></div>
+
+$$ \pre(a) = \left\lbrace (v_i, d_i), \neg (v_j, d_j), \ldots \right\rbrace$$
+
+$$ \eff(a) = \left\lbrace \langle v_i, \neg d_i\rangle, \langle v_j, d_j\rangle, \ldots \right\rbrace$$
 
 ---
 
-## MAP task
+Задача мультиагентного планирования:
+
+<div style="width: 1px; height: 3rem;"></div>
 
 $$
 \Large\mathcal{T} = \langle \mathcal{AG}, \mathcal{V}, \mathcal{A}, \mathcal{I}, \mathcal{G} \rangle
@@ -78,7 +89,9 @@ $$
 
 ---
 
-## В общих чертах
+## Описание алгоритма
+
+<!-- WARN: too much text -->
 
 1. Агент составляет изначальный план используя только свои знания
 1. Агент делится частью своих знаний с другими агентами
@@ -88,9 +101,10 @@ $$
 
 ---
 
-## Распределенный план
+### Распределенный план
 
 ```python
+# ommited: share and receive fluents with other agents
 while received_fluents:
     for f in received_fluents:
         if f not in RPG_i:
@@ -104,30 +118,57 @@ while received_fluents:
 
 ---
 
-## Уточнение
+<!--  WARN: bad -->
+### Уточнение плана
 
 ```python
 while True:
     goal = open_goals[base_plan]
     plan = plans[goal]
 
-    send_to_others(refinements[plan])
-    other_refinements = get_from_others(plan)
-    refinements += other_refinements
+    # ommited: share and receive refinements with other agents
 
     for p in refinements[plan]:
         evals[plan][p] = eval_plan(p)
 
-    best_plan = evals.select_best()
-    base_plan = best_plan
-    
+    base_plan = evals.select_best()
     if open_goals(base_plan).empty():
         return base_plan
 ```
 
 ---
 
-## Надежность и полнота
+## Правильность алгоритма
+
+---
+
+Пусть существует план $\prod$ где:
+$\langle v,d_1\rangle \in \prod$.
+
+<div style="width: 1px; height: 3rem;"></div>
+
+Пусть существует уточнение $\prod'$ где:
+один из эффектов: $(v = d_2)$
+
+<div style="width: 1px; height: 3rem;"></div>
+
+$(v = d_2)$ &mdash; угроза $\prod$
+
+---
+
+В зависимости от информации о $v$:
+
+- **Полная**: несоответствие обнаружено
+- **Частичная**: агент видит $\langle v, \bot\rangle$, $\bot \neq d_1$
+- **Нет**: действие не может быть выполнено
+
+---
+
+## Полнота алгоритма
+
+---
+
+## Вывод
 
 ---
 
