@@ -47,62 +47,168 @@
 \newpage
 \section{Introduction}
 
-Automated Planning is the field devoted to studying the reasoning side of acting. From the restricted conceptual model assumed in classical planning to the extended models that address temporal planning, on-line planning or planning in partially-observable and non-deterministic domains, the field of Automated Planning has experienced huge advances\cite{ghallab2004automated}.
+Automated Planning is the field devoted to studying the reasoning side of acting.
+From the restricted conceptual model assumed in classical planning to the extended models that address temporal planning, on-line planning or planning in partially-observable and non-deterministic domains, the field of Automated Planning has experienced huge advances\cite{ghallab2004automated}.
 
-Multi-Agent Planning (MAP) introduces a new perspective in the resolution of a planning task with the adoption of a distributed problem-solving scheme instead of the classical single-agent planning paradigm. Distributed planning is required "when planning knowledge or responsibility is distributed among agents or when the execution capabilities that must be employed to successfully achieve objectives are inherently distributed"\cite{desJardins1999ASO}.
+Multi-Agent Planning (MAP) introduces a new perspective in the resolution of a planning task with the adoption of a distributed problem-solving scheme instead of the classical single-agent planning paradigm.
+Distributed planning is required "when planning knowledge or responsibility is distributed among agents or when the execution capabilities that must be employed to successfully achieve objectives are inherently distributed"\cite{desJardins1999ASO}.
 
-The authors of \cite{desJardins1999ASO} analyze distributed planning from a twofold perspective; one approach, named Cooperative Distributed Planning, regards a MAP task as the process of formulating or executing a plan among a number of participants; the second approach, named Negotiated Distributed Planning, puts the focus on coordinating and scheduling the actions of multiple agents in a shared environment. The first approach has evolved to what is nowadays commonly known as cooperative and distributed MAP, with a focus on extending planning into a distributed environment and allocating the planning task among multiple agents. The second approach is primarily concerned with controlling and coordinating the actions of multiple agents in a shared environment so as to ensure that their local objectives are met. We will refer to this second approach, which stresses the coordination and execution of large-scale multi-agent planning problems, as decentralized planning for multiple agents. Moreover, while the first planning-oriented view of MAP relies on deterministic approaches, the study of decentralized MAP has yielded an intensive research work on coordination of activities in contexts under uncertainty and/or partial observability with the development of formal methods inspired by the use of Markov Decision Processes\cite{Seuken2008}.
+The topic of this paper is "Multi-agent planning with incomplete information".
 
-All aforementioned planning approaches have been typically conceived for independent or loosely-coupled problems to enhance the benefits of distributed planning between autonomous agents as solving this type of problems require less coordination between the agents' sub-plans. However, when it comes to tightly-coupled agents' tasks, MAP has been relegated in favour of centralized approaches and little work has been done in this direction. This paper presents a general-purpose MAP capable to efficiently handle planning problems with any level of coupling between agents. We propose a cooperative refinement planning approach, built upon the partial-order planning paradigm, that allows agents to work with incomplete information and to have incomplete views of the world, i.e. being ignorant of other agents' information, as well as maintaining their own private information.
+% The authors of \cite{desJardins1999ASO} analyze distributed planning from a twofold perspective; one approach, named Cooperative Distributed Planning, regards a MAP task as the process of formulating or executing a plan among a number of participants; the second approach, named Negotiated Distributed Planning, puts the focus on coordinating and scheduling the actions of multiple agents in a shared environment.
+% The first approach has evolved to what is nowadays commonly known as cooperative and distributed MAP, with a focus on extending planning into a distributed environment and allocating the planning task among multiple agents.
+% The second approach is primarily concerned with controlling and coordinating the actions of multiple agents in a shared environment so as to ensure that their local objectives are met.
+% We will refer to this second approach, which stresses the coordination and execution of large-scale multi-agent planning problems, as decentralized planning for multiple agents.
+% Moreover, while the first planning-oriented view of MAP relies on deterministic approaches, the study of decentralized MAP has yielded an intensive research work on coordination of activities in contexts under uncertainty and/or partial observability with the development of formal methods inspired by the use of Markov Decision Processes\cite{Seuken2008}.
 
-Similar to \cite{Jonsson2011ScalingUM}, we use an iterative planning refinement procedure that uses single-agent planning technology. Particularly, our model builds upon a partial-order planning (POP) paradigm, which also allow us to represent a collection of acting entities as a single agent. POP is a very suitable approach for centralized MAP with a small number of coordination points between agents \cite{Kvarnstrm2010PlanningFL}, and the application of a multi-agent POP refinement framework also reveals as a very appropriate mechanism to address tightly-coupled problems.
+\subsection{Relevance}
 
-This paper is organized as follows. The next section presents an overwiew of the historical background on MAP. Following, we present a typical specification of a MAP task. The next sections describe the POP refinement approach and the refinement planning algorithm carried out by the agents. Finally, we conclude and outline the future lines of research and potential applications of the findings presented in this paper.
+Planning approaches have been typically conceived for independent or loosely-coupled problems to enhance the benefits of distributed planning between autonomous agents as solving this type of problems require less coordination between the agents' sub-plans.
+However, when it comes to tightly-coupled agents' tasks, MAP has been relegated in favour of centralized approaches and thus little work has been done in this direction.
+
+\subsection{The aim of this paper}
+
+This paper presents a general-purpose MAP capable to efficiently handle planning problems with any level of coupling between agents.
+We propose a cooperative refinement planning approach, built upon the partial-order planning paradigm, that allows agents to work with incomplete information and to have incomplete views of the world, i.e.
+being ignorant of other agents' information, as well as maintaining their own private information.
+
+Similar to \cite{Jonsson2011ScalingUM}, we use an iterative planning refinement procedure that uses single-agent planning technology.
+Particularly, our model builds upon a partial-order planning (POP) paradigm, which also allow us to represent a collection of acting entities as a single agent.
+POP is a very suitable approach for centralized MAP with a small number of coordination points between agents \cite{Kvarnstrm2010PlanningFL}, and the application of a multi-agent POP refinement framework also reveals as a very appropriate mechanism to address tightly-coupled problems.
+
+Another objective of this paper is to present an overview of the already-existing approaches to the distributed MAP, as it is imperative to the understanding of the algorithm presented in the later part of this paper.
+
+\subsection{Chapter outline}
+
+This paper is organized as follows.
+The next section presents an overview of the historical background on MAP.
+In the section "Multi-agent planning model" we present a specification of a MAP model.
+We discuss the terminolgy and the math used, as well as introduce the idea of partial visibility of information.
+The next section, titled "Refinement planning algorithm" describes the POP refinement approach and the refinement planning algorithm carried out by the agents.
+In the next section, we discuss the soundness and completeness of the proposed algorithm.
+Finally, we conclude and outline the future lines of research and potential applications of the findings presented in this paper.
 
 \section{Related work: historical background on MAP}
 
-The large body of work on distributed MAP started jointly with an intensive research activity on multi-agent systems (MAS) at the beginning of the 90’s. Motivated by the distributed nature of the problems and reasoning of MAS, decentralized MAP focused on aspects related to distributed control including activities like the decomposition and allocation of tasks to agents and utilization of resources \cite{120067}\cite{10.5555/3090522.3090546}; reducing communication costs and constraints among agents \cite{decker_lesser_1992}\cite{Wolverton1998ControllingCI}; or incorporating group decision making for distributed plan management in collaborative settings (group decisions for selecting a high-level task decomposition or an agent assignation to a task, group processes for plan evaluation and monitoring, etc.)\cite{Grosz1999PlanningAA}. From this Distributed Artificial Intelligence (DAI) standpoint, MAP is fundamentally regarded as multi-agent coordination of actions in decentralized systems.
+The large body of work on distributed MAP started jointly with an intensive research activity on multi-agent systems (MAS) at the beginning of the 90’s.
+Motivated by the distributed nature of the problems and reasoning of MAS, decentralized MAP focused on aspects related to distributed control including activities like the decomposition and allocation of tasks to agents and utilization of resources \cite{120067}\cite{10.5555/3090522.3090546}; reducing communication costs and constraints among agents \cite{decker_lesser_1992}\cite{Wolverton1998ControllingCI}; or incorporating group decision making for distributed plan management in collaborative settings (group decisions for selecting a high-level task decomposition or an agent assignation to a task, group processes for plan evaluation and monitoring, etc.)\cite{Grosz1999PlanningAA}.
+From this Distributed Artificial Intelligence (DAI) standpoint, MAP is fundamentally regarded as multi-agent coordination of actions in decentralized systems.
 
-The inherently distributed nature of tasks and systems also fostered the appearance of techniques for cooperative formation of global plans. In DAI, this form of MAP puts greater emphasis on reasoning, stressing the deliberative planning activities of the agents as well as how and when to coordinate such planning activities to come up with a global plan. Given the cooperative nature of the planning task, where all agents are aimed at solving a common goal, this MAP approach features a more centralized view of the planning process. Investigations in this line have yield a great variety of planning and coordination methods such as techniques to merge the local plans of the agents \cite{Ephrati1994DivideAC}\cite{desJardins1999CoordinatingAD}\cite{1373700}, heuristic techniques for agents to solve their individual sub-plans \cite{Ephrati1997AHT}, mechanisms to coordinate concurrent interacting actions \cite{Boutilier_2001} or distributed constraint optimization techniques to coordinate conflicts among agents \cite{1373700}. In this latter work, the authors propose a general framework to coordinate the activities of several agents in a common environment such as partners in a military coordination, subcontractors working on a building, or airlines operating in an alliance.
+The inherently distributed nature of tasks and systems also fostered the appearance of techniques for cooperative formation of global plans.
+In DAI, this form of MAP puts greater emphasis on reasoning, stressing the deliberative planning activities of the agents as well as how and when to coordinate such planning activities to come up with a global plan.
+Given the cooperative nature of the planning task, where all agents are aimed at solving a common goal, this MAP approach features a more centralized view of the planning process.
+Investigations in this line have yield a great variety of planning and coordination methods such as techniques to merge the local plans of the agents \cite{Ephrati1994DivideAC}\cite{desJardins1999CoordinatingAD}\cite{1373700}, heuristic techniques for agents to solve their individual sub-plans \cite{Ephrati1997AHT}, mechanisms to coordinate concurrent interacting actions \cite{Boutilier_2001} or distributed constraint optimization techniques to coordinate conflicts among agents \cite{1373700}.
+In this latter work, the authors propose a general framework to coordinate the activities of several agents in a common environment such as partners in a military coordination, subcontractors working on a building, or airlines operating in an alliance.
 
-Many of the aforementioned techniques and approaches were actually used by some of the early MAP tools. Distributed NOAH \cite{10.5555/1624861.1624903} is one of the first Partial-Order Planning (POP) systems that generates gradual refinements in the space of (abstract) plans using a representation similar to the Hierarchical Task Networks (HTNs). The scheme proposed in \cite{10.5555/1624861.1624903} relies on a distributed conflict-solving process across various agents that are able to plan without complete or consistent planning data; the limitation of Distributed NOAH is the amount of information that must be exchanged between planners and the lack of robustness to communication loss or error. In the domain-specific Partial Global Planning (PGP) method \cite{120067}, agents build their partial global view of the planning problem, and the search algorithm finds local plans that can be then coordinated to meet the goals of all the agents. Generalized PGP (GPGP) is a domain-independent extension of PGP \cite{decker_lesser_1992} that separates the process of coordination from the local scheduling of activities and task selection, which enables agents to communicate more abstract and hierarchically organized information and has smaller coordination overhead. DSIPE \cite{desJardins1999CoordinatingAD} is a distributed version of SIPE2 \cite{10.5555/52077} closely related to the Distributed NOAH planner. DSIPE proposes an efficient communication scheme among agents by creating partial views of sub-plans. The plan merging process is centralized in one agent and uses the conflict-resolution principle originally proposed in NOAH. The authors of \cite{deWeerdt2003} propose a plan merging technique that results in distributed plans in which agents become dependent on each other, but are able to attain their goals more efficiently.
+Many of the aforementioned techniques and approaches were actually used by some of the early MAP tools.
+Distributed NOAH \cite{10.5555/1624861.1624903} is one of the first Partial-Order Planning (POP) systems that generates gradual refinements in the space of (abstract) plans using a representation similar to the Hierarchical Task Networks (HTNs).
+The scheme proposed in \cite{10.5555/1624861.1624903} relies on a distributed conflict-solving process across various agents that are able to plan without complete or consistent planning data; the limitation of Distributed NOAH is the amount of information that must be exchanged between planners and the lack of robustness to communication loss or error.
+In the domain-specific Partial Global Planning (PGP) method \cite{120067}, agents build their partial global view of the planning problem, and the search algorithm finds local plans that can be then coordinated to meet the goals of all the agents.
+Generalized PGP (GPGP) is a domain-independent extension of PGP \cite{decker_lesser_1992} that separates the process of coordination from the local scheduling of activities and task selection, which enables agents to communicate more abstract and hierarchically organized information and has smaller coordination overhead.
+DSIPE \cite{desJardins1999CoordinatingAD} is a distributed version of SIPE2 \cite{10.5555/52077} closely related to the Distributed NOAH planner.
+DSIPE proposes an efficient communication scheme among agents by creating partial views of sub-plans.
+The plan merging process is centralized in one agent and uses the conflict-resolution principle originally proposed in NOAH.
+The authors of \cite{deWeerdt2003} propose a plan merging technique that results in distributed plans in which agents become dependent on each other, but are able to attain their goals more efficiently.
 
-HTN planning has also been exploited for coordinating the plans of multiple agents \cite{Clement1999TheoryFC}. The attractiveness of approaches that integrate hierarchical planning in agent teams such as STEAM \cite{Tambe1997TowardsFT} is that they leverage the abstraction levels of the plan hierarchies for coordinating agents, thus enhancing the efficiency and quality of coordinating the agents’ plans. A-SHOP \cite{Dix2003IMPACTingSP} is a multi-agent version of the SHOP HTN planner \cite{Nau_2003} that implements capabilities for interacting with external agents, performs mixed symbolic/numeric computations, and makes queries to distributed, heterogeneous information sources without requiring knowledge about how and where these resources are located. Moreover, authors in \cite{Kabanza2005DISTRIBUTEDHT} propose a distributed version of SHOP that runs on a network of clusters through the implementation of a simple distributed backtrack search scheme.
+HTN planning has also been exploited for coordinating the plans of multiple agents \cite{Clement1999TheoryFC}.
+The attractiveness of approaches that integrate hierarchical planning in agent teams such as STEAM \cite{Tambe1997TowardsFT} is that they leverage the abstraction levels of the plan hierarchies for coordinating agents, thus enhancing the efficiency and quality of coordinating the agents’ plans.
+A-SHOP \cite{Dix2003IMPACTingSP} is a multi-agent version of the SHOP HTN planner \cite{Nau_2003} that implements capabilities for interacting with external agents, performs mixed symbolic/numeric computations, and makes queries to distributed, heterogeneous information sources without requiring knowledge about how and where these resources are located.
+Moreover, authors in \cite{Kabanza2005DISTRIBUTEDHT} propose a distributed version of SHOP that runs on a network of clusters through the implementation of a simple distributed backtrack search scheme.
 
-As a whole, cooperative MAP approaches devoted to the construction of a plan that solves a common goal are determined by two factors, the underlying planning paradigm and the mechanism to coordinate the formation of the plan. The vast literature on multi-agent coordination methods is mostly concerned with the task of combining and adapting local planning representations into a global consistent solution. The adaptability of these methods to cooperative MAP is highly dependent on the particular agent distribution and the plan synthesis strategy of the MAP solver.
+As a whole, cooperative MAP approaches devoted to the construction of a plan that solves a common goal are determined by two factors, the underlying planning paradigm and the mechanism to coordinate the formation of the plan.
+The vast literature on multi-agent coordination methods is mostly concerned with the task of combining and adapting local planning representations into a global consistent solution.
+The adaptability of these methods to cooperative MAP is highly dependent on the particular agent distribution and the plan synthesis strategy of the MAP solver.
 
-\section{Multi-agent planning task}
+\section{Multi-agent planning model}
 
-In our approach, the planning formalism of an agent is based on a STRIPS-like model of classical planning under partial observability. The model allows agents to represent their partial view of the world through the adoption of the open world assumption. States are represented in terms of state variables. $\mathcal{O}$ is a finite set of objects that model the elements of the planning domain; $\mathcal{V}$ is a finite set of state variables each with an associated finite domain, $\mathcal{D}_v$, of mutually exclusive values. Values in $\mathcal{D}_v$ denote objects of the planning domain, i.e., $\forall v \in \mathcal{V}, \mathcal{D}_v \subseteq \mathcal{O}$. A state is a set of \textit{positive fluents} of the form $\langle v,d\rangle$, and \textit{negative fluents} of the form $\langle v,\neg d\rangle$, meaning that the variable takes on the value $d$ or $\neg d$, respectively. A \textit{formula} $(v, d)$ evaluates to true if the fluent $\langle v,d\rangle$ is present in the state and it evaluates to false otherwise. More specifically, $(v, d)$ evaluates to false if the fluent $\langle v,\neg d\rangle$ is in the state, or if no fluent relating the variable, $v$, and the value, $d$, is present in the state, in which case we say the current value of $v$ is unknown. We will generally refer to as \textit{fluents} both positive and negative fluents.
+\subsection{Planning domain}
 
-\textit{Actions} are given as tuples $a = \langle \pre(a),\eff(a)\rangle$, where $\pre(a)$ denotes the formulas that must hold in a state $S$ for $a$ to be applicable, and $\eff(a)$ represents the new fluents in the resulting state $S'$. Effects of the form $(v = d)$ add a fluent $\langle v,d\rangle$ in the resulting state as well as a set of fluents $\left\{ \langle v,\neg d_j\rangle \right\}$, $\forall d_j \neq d, d_j \in Dv$, reflecting that $(v, d_j)$ evaluates to false in the resulting state. Effects of the form $(v \neq d)$ add a fluent $\langle v,\neg d_j\rangle$ to the resulting state, which implies the current value of $v$ is unknown unless there is a fluent $\langle v,d'\rangle$ in $S', d \neq d'$.
+In our approach, the planning formalism of an agent is based on a STRIPS-like model of classical planning under partial observability.
+The model allows agents to represent their partial view of the world through the adoption of the open world assumption.
+States are represented in terms of state variables.
+$\mathcal{O}$ is a finite set of objects that model the elements of the planning domain; $\mathcal{V}$ is a finite set of state variables each with an associated finite domain, $\mathcal{D}_v$, of mutually exclusive values.
+Values in $\mathcal{D}_v$ denote objects of the planning domain, i.e., $\forall v \in \mathcal{V}, \mathcal{D}_v \subseteq \mathcal{O}$.
+A state is a set of \textit{positive fluents} of the form $\langle v,d\rangle$, and \textit{negative fluents} of the form $\langle v,\neg d\rangle$, meaning that the variable takes on the value $d$ or $\neg d$, respectively.
+A \textit{formula} $(v, d)$ evaluates to true if the fluent $\langle v,d\rangle$ is present in the state and it evaluates to false otherwise.
+More specifically, $(v, d)$ evaluates to false if the fluent $\langle v,\neg d\rangle$ is in the state, or if no fluent relating the variable, $v$, and the value, $d$, is present in the state, in which case we say the current value of $v$ is unknown.
+We will generally refer to as \textit{fluents} both positive and negative fluents.
+
+\textit{Actions} are given as tuples $a = \langle \pre(a),\eff(a)\rangle$, where $\pre(a)$ denotes the formulas that must hold in a state $S$ for $a$ to be applicable, and $\eff(a)$ represents the new fluents in the resulting state $S'$.
+Effects of the form $(v = d)$ add a fluent $\langle v,d\rangle$ in the resulting state as well as a set of fluents $\left\{ \langle v,\neg d_j\rangle \right\}$, $\forall d_j \neq d, d_j \in Dv$, reflecting that $(v, d_j)$ evaluates to false in the resulting state.
+Effects of the form $(v \neq d)$ add a fluent $\langle v,\neg d_j\rangle$ to the resulting state, which implies the current value of $v$ is unknown unless there is a fluent $\langle v,d'\rangle$ in $S', d \neq d'$.
+
+\subsection{MAP task}
 
 We define a MAP task as a tuple $\mathcal{T} = \langle \mathcal{AG}, \mathcal{V}, \mathcal{A}, \mathcal{I}, \mathcal{G} \rangle$ where:
 \begin{itemize}
   \item $\mathcal{AG} = \left\{1, \ldots, n\right\}$ is a finite non-empty set of planning agents.
-  \item $\mathcal{V} = \left\{\mathcal{V}_i\right\}^n_{i=1}$, where $\mathcal{V}_i$ is the set of state variables managed by agent $i$. Variables can be shared by two or more different agents.
-  \item $\mathcal{A} = \left\{\mathcal{A}_i\right\}^n_{i=1}$, where $\mathcal{A}_i$ is the set of actions that agent $i$ can perform. Given two different agents $i, j, \mathcal{A}_i$ and $\mathcal{A}_j$ can share some common actions or be two disjoint sets.
-  \item $\mathcal{I} = \left\{\mathcal{I}_i\right\}^n_{i=1}$, where $\mathcal{I}_i$ is the set of fluents known by agent $i$ that represents the initial state of the agent. If two agents share a variable $v$ then they also share all of the fluents regarding $v$.
+  \item $\mathcal{V} = \left\{\mathcal{V}_i\right\}^n_{i=1}$, where $\mathcal{V}_i$ is the set of state variables managed by agent $i$.
+Variables can be shared by two or more different agents.
+  \item $\mathcal{A} = \left\{\mathcal{A}_i\right\}^n_{i=1}$, where $\mathcal{A}_i$ is the set of actions that agent $i$ can perform.
+Given two different agents $i, j, \mathcal{A}_i$ and $\mathcal{A}_j$ can share some common actions or be two disjoint sets.
+  \item $\mathcal{I} = \left\{\mathcal{I}_i\right\}^n_{i=1}$, where $\mathcal{I}_i$ is the set of fluents known by agent $i$ that represents the initial state of the agent.
+If two agents share a variable $v$ then they also share all of the fluents regarding $v$.
   \item $\mathcal{G} = \left\{\mathcal{G}_i\right\}^n_{i=1}$, where $\mathcal{G}_i$ is a set of formulas known to agent $i$ that must hold in the final state and denote the top-level goals of $\mathcal{T}$.
 \end{itemize}
 
-As defined above, state variables may not be known to all agents. Given a state variable $v \in \mathcal{V}_i$ and $v \notin \mathcal{V}_j, \forall j \neq i, v$ is said to be \textit{private} to agent $i$. Additionally, agents can have different visions of the domain of a state variable; that is, not every value in a variable domain has to be visible to all agents. Given an agent $i$, we denote its view of the domain of a variable $v$ as $\mathcal{D}_{v_i} \subset \mathcal{D}_v$. Thus, the domain of a state variable $v$ can be defined as $\mathcal{D}_v = \left\{\mathcal{D}_{v_i}\right\}^n_{i=1}$. Agents’ incomplete views on the state variables and their domains directly affect the visibility of the fluents.
+\subsection{Partial visibility}
+
+As defined above, state variables may not be known to all agents.
+Given a state variable $v \in \mathcal{V}_i$ and $v \notin \mathcal{V}_j, \forall j \neq i, v$ is said to be \textit{private} to agent $i$.
+Additionally, agents can have different visions of the domain of a state variable; that is, not every value in a variable domain has to be visible to all agents.
+Given an agent $i$, we denote its view of the domain of a variable $v$ as $\mathcal{D}_{v_i} \subset \mathcal{D}_v$.
+Thus, the domain of a state variable $v$ can be defined as $\mathcal{D}_v = \left\{\mathcal{D}_{v_i}\right\}^n_{i=1}$.
+Agents’ incomplete views on the state variables and their domains directly affect the visibility of the fluents.
 
 \begin{itemize}
   \item An agent $i$ has \textit{full visibility} of a fluent $\langle v,d\rangle$ or $\langle v,\neg d\rangle$ if $v \in \mathcal{V}_i$ and $d \in \mathcal{D}_{v_i}$.
-  \item An agent $i$ has \textit{partial visibility} of a fluent $\langle v,d\rangle$ or $\langle v,\neg d\rangle$ $v \in \mathcal{V}_i$ but $d \notin \mathcal{D}_{v_i}$. Given a state $S$, where $\langle v,d\rangle \in S$, agent $i$ will see instead a fluent $\langle v, \bot$, where $\bot$ is the undefined value.
+  \item An agent $i$ has \textit{partial visibility} of a fluent $\langle v,d\rangle$ or $\langle v,\neg d\rangle$ $v \in \mathcal{V}_i$ but $d \notin \mathcal{D}_{v_i}$.
+Given a state $S$, where $\langle v,d\rangle \in S$, agent $i$ will see instead a fluent $\langle v, \bot$, where $\bot$ is the undefined value.
   \item An agent $i$ has \textit{no visibility} of a fluent $\langle v,d\rangle$ or $\langle v,\neg d\rangle$ if $v \notin \mathcal{V}_i$.
 \end{itemize}
 
-Our MAP model can be viewed as a POP-based, multi-agent refinement planning framework, a general method based on the refinement of the set of all possible partial-order plans \cite{Kambhampati_1997}. An agent proposes a plan $\prod$ that typically enforces some top-level goals of the planning task; then, the rest of agents collaborate on the refinement of this base plan $\prod$ by proposing refinement steps that solve some open goals in $\openGoals(\prod)$. This way, agents cooperatively solve the MAP task by consecutively refining an initially empty plan $\prod$.
+\subsection{Plan computation}
 
-A \textit{refinement step} $\prod_i$ devised by an agent $i$ over a base plan $\prod_i$ , where $g \in \openGoals(\prod^g)$, is a triple $\prod = \langle \Delta, OR, CL\rangle$, where $\Delta \in \mathcal{A}_i$ is a set of actions and $OR$ and $CL$ are sets of \textit{orderings} and \textit{causal links} over $\Delta$, respectively. $\prod_i$ is a plan free of \textit{threats} \cite{Younes2003VHPOPVH} that solves $g$ as well as all the new open goals that arise from this resolution and can only be achieved by agent $i$, $\langle v, d\rangle$ or $\langle v, \neg d\rangle$, where $(v \in \mathcal{V}_i) \wedge (v \notin \mathcal{V}_j, \forall j \notin i)$. That is, when solving an open goal of a base plan, an agent $i$ will also achieve the new arising open goals concerning fluents that are only visible to $i$, so are not visible to the rest of agents, leaving the rest of goals unsolved. Let $g \in \openGoals(\prod^g)$ be a formula of the form $(v, d)$ or $(v, ¬d)$; an agent $i$ computes a refinement step over $\prod^g$ iff $v \in \mathcal{V}_i$.
+Our MAP model can be viewed as a POP-based, multi-agent refinement planning framework, a general method based on the refinement of the set of all possible partial-order plans \cite{Kambhampati_1997}.
+An agent proposes a plan $\prod$ that typically enforces some top-level goals of the planning task; then, the rest of agents collaborate on the refinement of this base plan $\prod$ by proposing refinement steps that solve some open goals in $\openGoals(\prod)$.
+This way, agents cooperatively solve the MAP task by consecutively refining an initially empty plan $\prod$.
 
-Plans that agents build are concurrent multi-agent (MA) plans as two different actions in $\prod$ can now be executed concurrently by two different agents. Some MAP models adopt a simple form of concurrency: two actions can happen simultaneously if none of them changes the value of a state variable that the other relies on or affects, too \cite{Brenner2009}. We impose the additional concurrency constraint that the preconditions of two actions have to be mutually consistent \cite{Boutilier_2001}. This definition of concurrency is straightforwardly extended to a joint action $a = \langle a_1,\ldots, a_n\rangle$. Agents address concurrency inconsistencies through the detection of threats over the causal links of their actions. This way, concurrency issues between two different actions may not arise until their preconditions are supported through causal links.
+A \textit{refinement step} $\prod_i$ devised by an agent $i$ over a base plan $\prod_i$ , where $g \in \openGoals(\prod^g)$, is a triple $\prod = \langle \Delta, OR, CL\rangle$, where $\Delta \in \mathcal{A}_i$ is a set of actions and $OR$ and $CL$ are sets of \textit{orderings} and \textit{causal links} over $\Delta$, respectively.
+$\prod_i$ is a plan free of \textit{threats} \cite{Younes2003VHPOPVH} that solves $g$ as well as all the new open goals that arise from this resolution and can only be achieved by agent $i$, $\langle v, d\rangle$ or $\langle v, \neg d\rangle$, where $(v \in \mathcal{V}_i) \wedge (v \notin \mathcal{V}_j, \forall j \notin i)$.
+That is, when solving an open goal of a base plan, an agent $i$ will also achieve the new arising open goals concerning fluents that are only visible to $i$, so are not visible to the rest of agents, leaving the rest of goals unsolved.
+Let $g \in \openGoals(\prod^g)$ be a formula of the form $(v, d)$ or $(v, ¬d)$; an agent $i$ computes a refinement step over $\prod^g$ iff $v \in \mathcal{V}_i$.
 
-A refinement plan $\prod$ devised by an agent $i$ over a base plan $\prod^g$ is a concurrent MA plan that results from the composition of $\prod^g$ and a refinement step $\prod_i$ proposed by agent $i$. This refinement plan, which could eventually become a base plan, is defined as $\prod = \prod^g \circ \prod_i$, where $\circ$ represents the composition operation. A composite plan $\prod$ is a concurrent MA plan if for every pair of unequal actions $a_i$ and $a_j, i \neq j, \forall p_i \in \pre(a_i), p_i \notin \openGoals(\prod), \forall p_j \in \pre(a_j), p_j \notin \openGoals(\prod), a_i$ and $a_j$ are concurrently consistent.
+Plans that agents build are concurrent multi-agent (MA) plans as two different actions in $\prod$ can now be executed concurrently by two different agents.
+Some MAP models adopt a simple form of concurrency: two actions can happen simultaneously if none of them changes the value of a state variable that the other relies on or affects, too \cite{Brenner2009}.
+We impose the additional concurrency constraint that the preconditions of two actions have to be mutually consistent \cite{Boutilier_2001}.
+This definition of concurrency is straightforwardly extended to a joint action $a = \langle a_1,\ldots, a_n\rangle$.
+Agents address concurrency inconsistencies through the detection of threats over the causal links of their actions.
+This way, concurrency issues between two different actions may not arise until their preconditions are supported through causal links.
 
-In our model, each agent implements a POP planner to compute refinement plans over a base plan $\prod$. If an agent is not capable to come up with a concurrent MA plan, then the agent refrains from suggesting such a refinement. If no agent elicits a consistent refinement plan for a base plan, the plan node is pruned.
+A refinement plan $\prod$ devised by an agent $i$ over a base plan $\prod^g$ is a concurrent MA plan that results from the composition of $\prod^g$ and a refinement step $\prod_i$ proposed by agent $i$.
+This refinement plan, which could eventually become a base plan, is defined as $\prod = \prod^g \circ \prod_i$, where $\circ$ represents the composition operation.
+A composite plan $\prod$ is a concurrent MA plan if for every pair of unequal actions $a_i$ and $a_j, i \neq j, \forall p_i \in \pre(a_i), p_i \notin \openGoals(\prod), \forall p_j \in \pre(a_j), p_j \notin \openGoals(\prod), a_i$ and $a_j$ are concurrently consistent.
+
+In our model, each agent implements a POP planner to compute refinement plans over a base plan $\prod$.
+If an agent is not capable to come up with a concurrent MA plan, then the agent refrains from suggesting such a refinement.
+If no agent elicits a consistent refinement plan for a base plan, the plan node is pruned.
+
+\section{Refinement planning algorithm}
+
+The cooperative refinement planning algorithm starts with a preliminary information exchange by which agents communicate shareable information.
+After this initial stage, agents execute the multiagent refinement planning algorithm, which comprises two interleaved stages.
+First, agents individually elicit refinement plans over a centralized base plan through their embedded POP.
+Later, agents jointly select the most promising refinement as the next base plan.
+
+\subsection{Information exchange}
+
+Agents receive the information on the MAP task through a set of definition files.
+These files are encoded in a MAP language that extends \textit{PDDL3.1}, including a \texttt{:shared-data} section to configure the agent’s vision of the planning task and which fluents it shares and with whom.
+
+Prior to executing the refinement procedure, agents share information by building a distributed Relaxed Planning Graph (dis-RPG), based on the approach of \cite{Zhang2007GraphbasedMR}.
+Agents exchange the fluents defined as shareable in the \texttt{:shared-data} section of the MAP definition files.
+Fluents are labeled with the list of agents that can achieve them, giving each agent a view of the possible interactions that can arise at planning time with other agents.
+Additionally, the dis-RPG provides an estimate of the best cost to achieve each fluent, a helpful information to design heuristics to guide the problem-solving process.
 
 \begin{algorithm}
 \caption{Dis-RPG construction for an agent $i$}
@@ -129,29 +235,45 @@ In our model, each agent implements a POP planner to compute refinement plans ov
   \end{algorithmic}
 \end{algorithm}
 
-\section{Refinement planning}
+Algorithm \ref{alg:1} summarizes the construction of the dis-RPG.
+Agents compute an initial RPG and expand it by following the procedure in \cite{Hoffmann2011TheFP}.
+The RPG contains a set of fluent and action levels that are interleaved.
+The first fluent level contains the fluents that are part of the initial state, and the first action level includes all the actions whose preconditions appear in the first fluent level.
+The effects of these actions are placed in the second fluent level, and this way the graph is expanded until no new fluents are found.
 
-The cooperative refinement planning algorithm starts with a preliminary information exchange by which agents communicate shareable information. After this initial stage, agents execute the multiagent refinement planning algorithm, which comprises two interleaved stages. First, agents individually elicit refinement plans over a centralized base plan through their embedded POP. Later, agents jointly select the most promising refinement as the next base plan.
+Once all the agents have computed their initial RPGs, the iterative dis-RPG composition begins.
+As depicted in Algorithm \ref{alg:1}, agents start each iteration by exchanging the the fluents shareable with other agents.
+An agent $i$ will send agent $j$ the set of fluents $SF_{i\rightarrow j}$ that are visible to agent $j$, i.e., the new fluents of the form $\langle v,d\rangle$ or $\langle v,\neg d\rangle$, where $v \in \mathcal{V}_i \cap \mathcal{V}_j$ and $d \in \mathcal{D}_{v_i} \cap \mathcal{D}_{v_j}$.
+Likewise, agent $i$ will receive from all agents $j \neq i$ the shareable fluents they have generated.
 
-\subsection{Information exchange}
+Agent $i$ updates then its $RPG_i$ with the set of new fluents it has received, $RF_i$.
+If a fluent $f$ is not yet in $RPG_i$, it is stored according to $cost(f)$.
+If $f$ is already in $RPG_i$, its cost is updated if $cost_{RPG_i}(f) > cost(f)$.
+Hence, agents only store the best estimated cost to reach each fluent.
+After updating $RPG_i$, agent $i$ expands it by checking whether the new inserted fluents trigger new actions in RP Gi or not.
+The fluents produced as effects of these new actions will be shared in the next iteration.
 
-Agents receive the information on the MAP task through a set of definition files. These files are encoded in a MAP language that extends \textit{PDDL3.1}, including a \texttt{:shared-data} section to configure the agent’s vision of the planning task and which fluents it shares and with whom.
-
-Prior to executing the refinement procedure, agents share information by building a distributed Relaxed Planning Graph (dis-RPG), based on the approach of \cite{Zhang2007GraphbasedMR}. Agents exchange the fluents defined as shareable in the \texttt{:shared-data} section of the MAP definition files. Fluents are labeled with the list of agents that can achieve them, giving each agent a view of the possible interactions that can arise at planning time with other agents. Additionally, the dis-RPG provides an estimate of the best cost to achieve each fluent, a helpful information to design heuristics to guide the problem-solving process.
-
-Algorithm \ref{alg:1} summarizes the construction of the dis-RPG. Agents compute an initial RPG and expand it by following the procedure in \cite{Hoffmann2011TheFP}. The RPG contains a set of fluent and action levels that are interleaved. The first fluent level contains the fluents that are part of the initial state, and the first action level includes all the actions whose preconditions appear in the first fluent level. The effects of these actions are placed in the second fluent level, and this way the graph is expanded until no new fluents are found.
-
-Once all the agents have computed their initial RPGs, the iterative dis-RPG composition begins. As depicted in Algorithm \ref{alg:1}, agents start each iteration by exchanging the the fluents shareable with other agents. An agent $i$ will send agent $j$ the set of fluents $SF_{i\rightarrow j}$ that are visible to agent $j$, i.e., the new fluents of the form $\langle v,d\rangle$ or $\langle v,\neg d\rangle$, where $v \in \mathcal{V}_i \cap \mathcal{V}_j$ and $d \in \mathcal{D}_{v_i} \cap \mathcal{D}_{v_j}$. Likewise, agent $i$ will receive from all agents $j \neq i$ the shareable fluents they have generated.
-
-Agent $i$ updates then its $RPG_i$ with the set of new fluents it has received, $RF_i$. If a fluent $f$ is not yet in $RPG_i$, it is stored according to $cost(f)$. If $f$ is already in $RPG_i$, its cost is updated if $cost_{RPG_i}(f) > cost(f)$. Hence, agents only store the best estimated cost to reach each fluent. After updating $RPG_i$, agent $i$ expands it by checking whether the new inserted fluents trigger new actions in RP Gi or not. The fluents produced as effects of these new actions will be shared in the next iteration.
-
-The process finishes when there are no new fluents in the system. Following, agents start the refinement planning process to build a solution plan jointly.
+The process finishes when there are no new fluents in the system.
+Following, agents start the refinement planning process to build a solution plan jointly.
 
 \subsection{Refinement process}
 
-The refinement planning process is based on a democratic leadership by which a baton is scheduled among the agents following a roundrobin strategy. Agents carry out two interleaved stages: the individual construction of refinement plans through a POP, and a coordination process by which agents jointly search the refinement space.
+The refinement planning process is based on a democratic leadership by which a baton is scheduled among the agents following a roundrobin strategy.
+Agents carry out two interleaved stages: the individual construction of refinement plans through a POP, and a coordination process by which agents jointly search the refinement space.
 
-Algorithm \ref{alg:2} describes the refinement planning process. Each agent $i$ computes a finite set of refinement plans for $\prod^g, Refinements_i(\prod^g)$, through its embedded POP planner. The internal POP system follows an $A^\ast$ search algorithm guided by a stateof-the-art POP heuristic function \cite{Younes2003VHPOPVH}. The resulting refinement plans are exchanged by the agents in the system for their evaluation (send and receive operations in Algorithm \ref{alg:2}).
+Algorithm \ref{alg:2} describes the refinement planning process.
+Each agent $i$ computes a finite set of refinement plans for $\prod^g, Refinements_i(\prod^g)$, through its embedded POP planner.
+The internal POP system follows an $A^\ast$ search algorithm guided by a stateof-the-art POP heuristic function \cite{Younes2003VHPOPVH}.
+The resulting refinement plans are exchanged by the agents in the system for their evaluation (send and receive operations in Algorithm \ref{alg:2}).
+
+Agent $i$ has a local, partial vision of each refinement plan, $view_i(\prod)$, according to its visibility over the planning task $\mathcal{T}$.
+Thus, when receiving a refinement plan $\prod$, agent $i$ will only view the open goals $(v, d) \in \openGoals(\prod) | v \in \mathcal{V}_i$.
+With respect to the fluents, agent $i$ will only view those fluents for which it has full visibility.
+If $i$ has \textit{partial visibility} of a fluent $\langle v,d\rangle$ or $\langle v,\neg d\rangle$, it will see instead a fluent $\langle v,\bot$, where $\bot$ stands for the undefined value.
+This notion of partial view directly affects the evaluation of the refinements.
+
+The evaluation of refinement plans is carried out through a utility function $F$ (currently, we use the same heuristic function that guides the agents' internal POP for this purpose) that allows agents to estimate the quality of the plans.
+Since agents do not have complete information on the MAP task or the refinement plans, they evaluate plans according to its own view of each refinement plan $\prod$, i.e., agent $i$ evaluates a refinement plan $\prod$ according to $F(view_i(\prod))$ (see Algorithm \ref{alg:2}).
 
 \begin{algorithm}
 \caption{Refinement planning process for an agent $i$}
@@ -172,9 +294,9 @@ Algorithm \ref{alg:2} describes the refinement planning process. Each agent $i$ 
       \State $R \leftarrow R \cup Refinements(\prod^g)$
       \State Select best-valued plan $\prod_{best} \in R$
       \State $\prod \leftarrow \prod_{best}$
-      % Note: algorithmic places return on the same line as if,
-      % but end if on the next one, which is ugly.
-      % Force it to place return inside if block
+      % Note: algorithmic places Return on the same line as If,
+      % but EndIf on the next one, which is ugly.
+      % Force it to place return inside of the If..EndIf block
       \If{$\openGoals(\prod) = \emptyset$}\\
         \hspace{\algorithmicindent}\hspace{\algorithmicindent}\Return $\prod$
       \EndIf
@@ -182,39 +304,56 @@ Algorithm \ref{alg:2} describes the refinement planning process. Each agent $i$ 
   \end{algorithmic}
 \end{algorithm}
 
-Agent $i$ has a local, partial vision of each refinement plan, $view_i(\prod)$, according to its visibility over the planning task $\mathcal{T}$. Thus, when receiving a refinement plan $\prod$, agent $i$ will only view the open goals $(v, d) \in \openGoals(\prod) | v \in \mathcal{V}_i$. With respect to the fluents, agent $i$ will only view those fluents for which it has full visibility. If $i$ has \textit{partial visibility} of a fluent $\langle v,d\rangle$ or $\langle v,\neg d\rangle$, it will see instead a fluent $\langle v,\bot$, where $\bot$ stands for the undefined value. This notion of partial view directly affects the evaluation of the refinements.
+Once evaluated, the new refinement plans are stored in the set of refinements $R$.
+Next, each agent votes for the best-valued candidate $\prod_{best} \in R$.
+In case of a draw, the baton agent will choose the next base plan among the most voted alternatives.
 
-The evaluation of refinement plans is carried out through a utility function $F$ (currently, we use the same heuristic function that guides the agents' internal POP for this purpose) that allows agents to estimate the quality of the plans. Since agents do not have complete information on the MAP task or the refinement plans, they evaluate plans according to its own view of each refinement plan $\prod$, i.e., agent $i$ evaluates a refinement plan $\prod$ according to $F(view_i(\prod))$ (see Algorithm \ref{alg:2}).
+Once a refinement plan is selected, agents adopt it as the new base plan $\prod$.
+If $\openGoals(\prod) = \emptyset$, a solution plan is returned.
+As some open goals might not be visible to some agents, every agent $i$ must confirm that $\prod$ is a solution plan according to $view_i(\prod)$, i.e., $\prod$ is a solution iff $\forall i \in \mathcal{AG}, \openGoals(view_i(\prod)) = \emptyset$.
+If the plan has still pending goals, the baton agent selects the next open goal $g \in \openGoals(\prod)$ to be solved, and a new iteration of the refinement planning process starts.
 
-Once evaluated, the new refinement plans are stored in the set of refinements $R$. Next, each agent votes for the best-valued candidate $\prod_{best} \in R$. In case of a draw, the baton agent will choose the next base plan among the most voted alternatives.
+The planning algorithm carried out by the agents can be regarded as a joint exploration of the refinement space.
+Nodes in the search tree represent refinement plans and each iteration of the algorithm expands a different node.
 
-Once a refinement plan is selected, agents adopt it as the new base plan $\prod$. If $\openGoals(\prod) = \emptyset$, a solution plan is returned. As some open goals might not be visible to some agents, every agent $i$ must confirm that $\prod$ is a solution plan according to $view_i(\prod)$, i.e., $\prod$ is a solution iff $\forall i \in \mathcal{AG}, \openGoals(view_i(\prod)) = \emptyset$. If the plan has still pending goals, the baton agent selects the next open goal $g \in \openGoals(\prod)$ to be solved, and a new iteration of the refinement planning process starts.
+\section{Soundness and completeness}
 
-The planning algorithm carried out by the agents can be regarded as a joint exploration of the refinement space. Nodes in the search tree represent refinement plans and each iteration of the algorithm expands a different node.
+The algorithm we have presented can be regarded as a multi-agent extension of the POP algorithm.
+A partial-order plan is sound if it is a threat-free plan.
+In our algorithm, we address inconsistencies among the concurrent MA plans by detecting and solving threats.
+Thus, in order to prove that our algorithm is sound, we should ensure that all the threats among the causal links of a concurrent MA plan are correctly detected and solved.
 
-\subsection{Soundness and completeness}
+Under complete information, threats on a MA concurrent plan will be correctly detected by any agent, as all the fluents in the plan are fully visible.
+In our incomplete information model, we should study how visibility over fluents affects the detection of threats.
 
-The algorithm we have presented can be regarded as a multi-agent extension of the POP algorithm. A partial-order plan is sound if it is a threat-free plan. In our algorithm, we address inconsistencies among the concurrent MA plans by detecting and solving threats. Thus, in order to prove that our algorithm is sound, we should ensure that all the threats among the causal links of a concurrent MA plan are correctly detected and solved.
-
-Under complete information, threats on a MA concurrent plan will be correctly detected by any agent, as all the fluents in the plan are fully visible. In our incomplete information model, we should study how visibility over fluents affects the detection of threats.
-
-Let $\prod$ be a MA concurrent plan and let $\langle v,d_1\rangle$ be a fluent in a causal link $cl \in CL(\prod)$. Suppose that an agent $i$ builds a refinement $\prod'$ over $\prod$ that adds a new action at to the plan which is not ordered with respect to $cl$ and has an effect $(v = d2)$. This effect causes a threat over $cl$ as it conflicts with $\langle v,d_1\rangle$. For $\prod'$ to be sound, agent $i$ should be able to detect such a threat whatever visibility it has over the fluent $\langle v,d_1\rangle$:
+Let $\prod$ be a MA concurrent plan and let $\langle v,d_1\rangle$ be a fluent in a causal link $cl \in CL(\prod)$.
+Suppose that an agent $i$ builds a refinement $\prod'$ over $\prod$ that adds a new action at to the plan which is not ordered with respect to $cl$ and has an effect $(v = d2)$.
+This effect causes a threat over $cl$ as it conflicts with $\langle v,d_1\rangle$.
+For $\prod'$ to be sound, agent $i$ should be able to detect such a threat whatever visibility it has over the fluent $\langle v,d_1\rangle$:
 
 \begin{itemize}
   \item If $i$ has \textit{full visibility} over $\langle v,d_1\rangle$, the inconsistency between $cl$ and $a_t$ will be correctly detected.
-  \item If $i$ has \textit{no visibility} over $\langle v,d_1\rangle$, then $v \notin \mathcal{V}_i$. In this case, agent $i$ does not have an action at with an effect involving variable $v$, i.e., such a threat can never occur.
-  \item If $i$ has partial visibility over $\langle v,d_1\rangle$, agent $i$ will see instead a fluent $\langle v,\bot\rangle$. Since $\bot\neq d_2$, the threat will be detected and solved.
+  \item If $i$ has \textit{no visibility} over $\langle v,d_1\rangle$, then $v \notin \mathcal{V}_i$.
+In this case, agent $i$ does not have an action at with an effect involving variable $v$, i.e., such a threat can never occur.
+  \item If $i$ has partial visibility over $\langle v,d_1\rangle$, agent $i$ will see instead a fluent $\langle v,\bot\rangle$.
+Since $\bot\neq d_2$, the threat will be detected and solved.
 \end{itemize}
 
 Therefore, all the threats over MA concurrent plans are always detected and resolved, which proves that our MAP algorithm is sound.
 
-As for completeness, we cannot ensure that our MAP algorithm is complete. According to the notion of refinement plan we have used in this work, the number of refinement plans that an agent can produce over a base plan may not be finite. Hence, we are implicitly pruning the refinement search space. Nevertheless, agents rely on an $A^\ast$ POP search process to build the refinement plans, which in most cases returns good refinement plans that guide the MAP algorithm towards a solution plan. The empirical results shown in the next section confirm our claim.
+As for completeness, we cannot ensure that our MAP algorithm is complete.
+According to the notion of refinement plan we have used in this work, the number of refinement plans that an agent can produce over a base plan may not be finite.
+Hence, we are implicitly pruning the refinement search space.
+Nevertheless, agents rely on an $A^\ast$ POP search process to build the refinement plans, which in most cases returns good refinement plans that guide the MAP algorithm towards a solution plan.
+The empirical results shown in the next section confirm our claim.
 
 \section{Conclusions}
 
-This paper presents a general-purpose MAP model suitable to cope with a wide variety of MA planning domains under incomplete information. The ability to define incomplete views of the world for the agents allows us to deal with more real problems, from inherently distributed domains (functionally or spatially) to problems that handle global and centralized sources of information.
+This paper presents a general-purpose MAP model suitable to cope with a wide variety of MA planning domains under incomplete information.
+The ability to define incomplete views of the world for the agents allows us to deal with more real problems, from inherently distributed domains (functionally or spatially) to problems that handle global and centralized sources of information.
 
-The MAP resolution process is a POP-based refinement planning approach that iteratively combines planning and coordination while maintaining for each agent only the information that is visible to the planning entity. This POP approach centered around the gradual construction of a joint solution plan for the MAP task highly benefits the resolution of cooperative distributed planning problems.
+The MAP resolution process is a POP-based refinement planning approach that iteratively combines planning and coordination while maintaining for each agent only the information that is visible to the planning entity.
+This POP approach centered around the gradual construction of a joint solution plan for the MAP task highly benefits the resolution of cooperative distributed planning problems.
 
 We can conclude that MAP-POP is an efficient, domain-independent and general-purpose framework to solve MAP problems.
 
