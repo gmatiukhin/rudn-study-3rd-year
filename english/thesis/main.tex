@@ -53,8 +53,6 @@ From the restricted conceptual model assumed in classical planning to the extend
 Multi-Agent Planning (MAP) introduces a new perspective in the resolution of a planning task with the adoption of a distributed problem-solving scheme instead of the classical single-agent planning paradigm.
 Distributed planning is required "when planning knowledge or responsibility is distributed among agents or when the execution capabilities that must be employed to successfully achieve objectives are inherently distributed"\cite{desJardins1999ASO}.
 
-The topic of this paper is "Multi-agent planning with incomplete information".
-
 % The authors of \cite{desJardins1999ASO} analyze distributed planning from a twofold perspective; one approach, named Cooperative Distributed Planning, regards a MAP task as the process of formulating or executing a plan among a number of participants; the second approach, named Negotiated Distributed Planning, puts the focus on coordinating and scheduling the actions of multiple agents in a shared environment.
 % The first approach has evolved to what is nowadays commonly known as cooperative and distributed MAP, with a focus on extending planning into a distributed environment and allocating the planning task among multiple agents.
 % The second approach is primarily concerned with controlling and coordinating the actions of multiple agents in a shared environment so as to ensure that their local objectives are met.
@@ -167,7 +165,7 @@ Given a state $S$, where $\langle v,d\rangle \in S$, agent $i$ will see instead 
   \item An agent $i$ has \textit{no visibility} of a fluent $\langle v,d\rangle$ or $\langle v,\neg d\rangle$ if $v \notin \mathcal{V}_i$.
 \end{itemize}
 
-\subsection{Plan computation}
+\subsection{Planning framework}
 
 Our MAP model can be viewed as a POP-based, multi-agent refinement planning framework, a general method based on the refinement of the set of all possible partial-order plans \cite{Kambhampati_1997}.
 An agent proposes a plan $\prod$ that typically enforces some top-level goals of the planning task; then, the rest of agents collaborate on the refinement of this base plan $\prod$ by proposing refinement steps that solve some open goals in $\openGoals(\prod)$.
@@ -347,7 +345,7 @@ Hence, we are implicitly pruning the refinement search space.
 Nevertheless, agents rely on an $A^\ast$ POP search process to build the refinement plans, which in most cases returns good refinement plans that guide the MAP algorithm towards a solution plan.
 The empirical results shown in the next section confirm our claim.
 
-\section{Conclusions}
+\section{Conclusions and future work}
 
 This paper presents a general-purpose MAP model suitable to cope with a wide variety of MA planning domains under incomplete information.
 The ability to define incomplete views of the world for the agents allows us to deal with more real problems, from inherently distributed domains (functionally or spatially) to problems that handle global and centralized sources of information.
@@ -355,7 +353,7 @@ The ability to define incomplete views of the world for the agents allows us to 
 The MAP resolution process is a POP-based refinement planning approach that iteratively combines planning and coordination while maintaining for each agent only the information that is visible to the planning entity.
 This POP approach centered around the gradual construction of a joint solution plan for the MAP task highly benefits the resolution of cooperative distributed planning problems.
 
-We can conclude that MAP-POP is an efficient, domain-independent and general-purpose framework to solve MAP problems.
+We can conclude that our algorithm is an efficient, domain-independent and general-purpose framework to solve MAP problems.
 
 \newpage
 \printbibliography
