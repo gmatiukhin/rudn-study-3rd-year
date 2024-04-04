@@ -1,0 +1,51 @@
+(defun part1 ()
+  (print "Part 1")
+  (let ((exps
+          (list 
+            '(car (cons 'left 'right))
+            '(cdr (cons 'left 'right))
+            '(cons 'left 'right)
+            '(car (list 'a 'b 'c 'd))
+            '(car (list (cons 'a '()) 'b 'c 'd))
+            '(car (list 'a (list 'b 'c 'd)))
+            '(car (list (cons 'a 'b) 'c 'd 'e))
+            '(cdr (list 'this 'sentence 'is 'a 'list))
+            '(cdr (list 'what (list 'about 'this 'one)))
+            '(cdr (list (cons 'dot 'pair1) (cons 'dot 'pair2)))
+            '(cons 'car 'cdr)
+            '(cdr (list 'empty '()))
+            '(cdr (list 'car 'cdr))
+            '(cdr (list (list 'car '()) 'cdr))
+            '(cons 'a '())
+            '(cons '75Q 100)
+            '(car (cons 1 (cons 2.0 (cons 30.0E-1 '77Q))))
+            '(cdr (cons 1 (cons 2.0 (cons 30.0E-1 '77Q))))
+            '(cons (cons 'a 'b) '())
+            '(car (list (list (list (list 'alpha))))))))
+      (mapc (lambda (x) (pprint x) (write '->) (write (eval x))) exps)))
+
+(defun part2 ()
+  (print "Part 2")
+  (let ((exps
+          (list 
+            '(car (cdr (car (list (list 'c 'a 't)))))
+            '(car (car (list (list 'a))))
+            '(car (cdr (list 'm 'a 'r 't)))
+            '(cdr (cons 'b 'a))
+            '(car (cdr (cdr(list 's 'm 'a 'r 't))))
+            '(car (cdr (cdr (cdr (list 1 '2Q 3E3 'a)))))
+            '(car (car (list (cons 'a 'b) (cons 'c 'd))))
+            '(cdr (car (list (cons 'b 'a) (cons 'c 'd))))
+            '(car (car (car (cdr (list (list (list 'c)) (list (list 'a)))))))
+            '(car (car (cdr (car (list (list (cons 'x 'y) (cons 'a 'b)))))))
+            '(car (cdr (car (cdr (car (list (list (cons 'x 'y) (list 'b 'a)))))))))))
+      (mapc (lambda (x) (pprint x) (write '->) (write (eval x))) exps)))
+
+(defun main ()
+  (print "Task 2")
+  (part1)
+  (part2))
+
+(sb-ext:save-lisp-and-die "task2"
+                          :toplevel 'main
+                          :executable t)
