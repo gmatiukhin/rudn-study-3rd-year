@@ -10,4 +10,4 @@ sdraw:
 	@sbcl --load sdraw.generic
 
 clean:
-	rm -r bin
+	@rm task2 task3
