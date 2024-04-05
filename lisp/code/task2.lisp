@@ -1,0 +1,51 @@
+(defun part1 ()
+  (pprint "Part 1")
+  (let ((exps
+          (list 
+            '(car '(left . right))
+            '(cdr '(left . right))
+            '(cons 'left 'right)
+            '(car '(a b c d))
+            '(car '((a . NIL) b c d))
+            '(car '(a (b c d)))
+            '(car '((a . b) c d e))
+            '(cdr '(это предложение является списком))
+            '(cdr '(а (что об этом)))
+            '(cdr '((точка . пара1) (точка . пара2)))
+            '(cons 'car 'cdr)
+            '(cdr '(empty))
+            '(cdr '(car cdr))
+            '(cdr '((car) cdr))
+            '(cons 'a '()) 
+            '(cons '75Q 100)
+            '(car '(1 . (2.0 . (30.0E-1 . 77Q))))
+            '(cdr '(1 . (2.0 . (30.0E-1 . 77Q))))
+            '(cons '(a  . b) NIL) 
+            '(car '((((alpha))))))))
+      (mapc (lambda (x) (pprint x) (write '->) (write (eval x))) exps)))
+
+(defun part2 ()
+  (pprint "Part 2")
+  (let ((exps
+          (list 
+            '(car (cdr (car '((c a t)))))
+            '(car (car '((a))))
+            '(car (cdr '(m a r t)))
+            '(cdr '(b . a))
+            '(car (cdr (cdr '(s m a r t))))
+            '(car (cdr (cdr (cdr '(1 2Q 3E3 a)))))
+            '(car (car '((a . b) (c . d))))
+            '(cdr (car '((b . a) (c . d))))
+            '(car (car (car (cdr '(((c)) ((a)))))))
+            '(car (car (cdr (car '(((x . y) (a . b)))))))
+            '(car (cdr (car (cdr (car '(((x . y) (b a)))))))))))
+      (mapc (lambda (x) (pprint x) (write '->) (write (eval x))) exps)))
+
+(defun main ()
+  (pprint "Task 2")
+  (part1)
+  (part2))
+
+(sb-ext:save-lisp-and-die "task2"
+                          :toplevel 'main
+                          :executable t)
