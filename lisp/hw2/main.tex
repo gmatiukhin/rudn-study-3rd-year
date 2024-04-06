@@ -27,42 +27,42 @@
 \subsection{1. Оцените следующие функции}
 
 \begin{minted}[mathescape, escapeinside=||]{lisp}
-(CAR '(LEFT . RIGHT))|$\rightarrow$|LEFT
-(CDR '(LEFT . RIGHT))|$\rightarrow$|RIGHT
-(CONS 'LEFT 'RIGHT)|$\rightarrow$|(LEFT . RIGHT)
-(CAR '(A B C D))|$\rightarrow$|A
-(CAR '((A) B C D))|$\rightarrow$|(A)
-(CAR '(A (B C D)))|$\rightarrow$|A
-(CAR '((A . B) C D E))|$\rightarrow$|(A . B)
-(CDR '(ЭТО ПРЕДЛОЖЕНИЕ ЯВЛЯЕТСЯ СПИСКОМ))|$\rightarrow$|(ПРЕДЛОЖЕНИЕ ЯВЛЯЕТСЯ СПИСКОМ)
-(CDR '(А (ЧТО ОБ ЭТОМ)))|$\rightarrow$|((ЧТО ОБ ЭТОМ))
-(CDR '((ТОЧКА . ПАРА1) (ТОЧКА . ПАРА2)))|$\rightarrow$|((ТОЧКА . ПАРА2))
-(CONS 'CAR 'CDR)|$\rightarrow$|(CAR . CDR)
-(CDR '(EMPTY))|$\rightarrow$|NIL
-(CDR '(CAR CDR))|$\rightarrow$|(CDR)
-(CDR '((CAR) CDR))|$\rightarrow$|(CDR)
-(CONS 'A '())|$\rightarrow$|(A)
-(CONS 75Q 100)|$\rightarrow$|(75Q . 100)
-(CAR '(1 . (2.0 . (30.0E-1 . 77Q))))|$\rightarrow$|1
-(CDR '(1 . (2.0 . (30.0E-1 . 77Q))))|$\rightarrow$|(2.0 3.0 . 77Q)
-(CONS '(A . B) NIL)|$\rightarrow$|((A . B))
-(CAR '((((ALPHA)))))|$\rightarrow$|(((ALPHA)))
+(CAR '(LEFT . RIGHT)) |$\rightarrow$| LEFT
+(CDR '(LEFT . RIGHT)) |$\rightarrow$| RIGHT
+(CONS 'LEFT 'RIGHT) |$\rightarrow$| (LEFT . RIGHT)
+(CAR '(A B C D)) |$\rightarrow$| A
+(CAR '((A) B C D)) |$\rightarrow$| (A)
+(CAR '(A (B C D))) |$\rightarrow$| A
+(CAR '((A . B) C D E)) |$\rightarrow$| (A . B)
+(CDR '(ЭТО ПРЕДЛОЖЕНИЕ ЯВЛЯЕТСЯ СПИСКОМ)) |$\rightarrow$| (ПРЕДЛОЖЕНИЕ ЯВЛЯЕТСЯ СПИСКОМ)
+(CDR '(А (ЧТО ОБ ЭТОМ))) |$\rightarrow$| ((ЧТО ОБ ЭТОМ))
+(CDR '((ТОЧКА . ПАРА1) (ТОЧКА . ПАРА2))) |$\rightarrow$| ((ТОЧКА . ПАРА2))
+(CONS 'CAR 'CDR) |$\rightarrow$| (CAR . CDR)
+(CDR '(EMPTY)) |$\rightarrow$| NIL
+(CDR '(CAR CDR)) |$\rightarrow$| (CDR)
+(CDR '((CAR) CDR)) |$\rightarrow$| (CDR)
+(CONS 'A '()) |$\rightarrow$| (A)
+(CONS 75Q 100) |$\rightarrow$| (75Q . 100)
+(CAR '(1 . (2.0 . (30.0E-1 . 77Q)))) |$\rightarrow$| 1
+(CDR '(1 . (2.0 . (30.0E-1 . 77Q)))) |$\rightarrow$| (2.0 3.0 . 77Q)
+(CONS '(A . B) NIL) |$\rightarrow$| ((A . B))
+(CAR '((((ALPHA))))) |$\rightarrow$| (((ALPHA)))
 \end{minted}
 
-\subsection{2. Укажите последовательность функций \texttt{CAR} и \texttt{CDR}, которые позволяют найти \texttt{A} из следующих S-выражений.}
+\subsection{2. Укажите последовательность функций \texttt{CAR} и \texttt{CDR}, которые позволяют найти A из следующих S-выражений.}
 
 \begin{minted}[mathescape, escapeinside=||]{lisp}
-(CAR (CDR (CAR '((C A T)))))|$\rightarrow$|A
-(CAR (CAR '((A))))|$\rightarrow$|A
-(CAR (CDR '(M A R T)))|$\rightarrow$|A
-(CDR '(B . A))|$\rightarrow$|A
-(CAR (CDR (CDR '(S M A R T))))|$\rightarrow$|A
-(CAR (CDR (CDR (CDR '(1 |2Q| 3000.0 A)))))|$\rightarrow$|A
-(CAR (CAR '((A . B) (C . D))))|$\rightarrow$|A
-(CDR (CAR '((B . A) (C . D))))|$\rightarrow$|A
-(CAR (CAR (CAR (CDR '(((C)) ((A)))))))|$\rightarrow$|A
-(CAR (CAR (CDR (CAR '(((X . Y) (A . B)))))))|$\rightarrow$|A
-(CAR (CDR (CAR (CDR (CAR '(((X . Y) (B A))))))))|$\rightarrow$|A
+'((C A T)) |$\rightarrow$| (CADAR'((C A T))) |$\rightarrow$| A
+'((A)) |$\rightarrow$| (CAAR '((A))) |$\rightarrow$| A
+'(M A R T) |$\rightarrow$| (CADR '(MART)) |$\rightarrow$| A
+'(B . A) |$\rightarrow$| (CDR '(B . A)) |$\rightarrow$| A
+'(S M A R T) |$\rightarrow$| (CADDR '(S M A R T)) |$\rightarrow$| A
+'(1 2Q 3E3 A) |$\rightarrow$| (CADDDR '(1 2Q 3E3 A)) |$\rightarrow$| A
+'((A . B) (C . D)) |$\rightarrow$| (CAAR '((A . B) (C . D))) |$\rightarrow$| A
+'((B . A) (C . D)) |$\rightarrow$| (CDAR '((B . A) (C . D))) |$\rightarrow$| A
+'(((C)) ((A))) |$\rightarrow$| (CAAADR '(((C)) ((A)))) |$\rightarrow$| |$\rightarrow$| A
+'(((X . Y) (A . B))) |$\rightarrow$| (CAADAR '(((X . Y) (A . B)))) |$\rightarrow$| A
+'(((X . Y) (B A))) |$\rightarrow$| (CAR (CDADAR '(((X . Y) (B A))))) |$\rightarrow$| A
 \end{minted}
 
 \end{document}

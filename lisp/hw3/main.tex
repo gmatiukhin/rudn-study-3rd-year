@@ -27,23 +27,23 @@
 \subsection{1. Оцените следующие лямбда-выражения}
 
 \begin{minted}[mathescape, escapeinside=||]{lisp}
-((LAMBDA (X) X) 'ATOM)|$\rightarrow$|ATOM
-((LAMBDA (Y) Y) 'LIST)|$\rightarrow$|LIST
-((LAMBDA (J) (CAR J)) '(ТРЕХ ЭЛЕМЕНТНЫЙ ЛИСТ))|$\rightarrow$|ТРЕХ
-((LAMBDA (K) (CDR K)) '(ТРЕХ ЭЛЕМЕНТНЫЙ ЛИСТ))|$\rightarrow$|(ЭЛЕМЕНТНЫЙ ЛИСТ)
-((LAMBDA (U V) (CONS U V)) 'VERY 'GOOD)|$\rightarrow$|(VERY . GOOD)
-((LAMBDA (Y X) (CONS Y X)) 'ОДИН '(ПОТОМ . ДРУГОЙ))|$\rightarrow$|(ОДИН ПОТОМ . ДРУГОЙ)
-((LAMBDA (A) (CAADR A)) '(A (B . |77Q2|)))|$\rightarrow$|B
-((LAMBDA (ПЕРЕМЕННАЯ) (CDAR ПЕРЕМЕННАЯ)) '((A B)))|$\rightarrow$|(B)
-((LAMBDA (J) 3.14159) NIL)|$\rightarrow$|3.14159
-((LAMBDA (J) 3.14159) NIL)|$\rightarrow$|3.14159
-((LAMBDA (J) 3.14159) 55)|$\rightarrow$|3.14159
-((LAMBDA () 3.14159))|$\rightarrow$|3.14159
-((LAMBDA (U V) U) 'ALPHA 'BETA)|$\rightarrow$|ALPHA
-((LAMBDA (U V) U) 'BETA 'ALPHA)|$\rightarrow$|BETA
-((LAMBDA (U V) V) 'ALPHA 'BETA)|$\rightarrow$|BETA
-((LAMBDA (V U) V) 'ALPHA 'BETA)|$\rightarrow$|ALPHA
-((LAMBDA (ПЕРВЫЙ ВТОРОЙ) (CAR ПЕРВЫЙ)) '(ПЕРВЫЙ) 'ВТОРОЙ)|$\rightarrow$|ПЕРВЫЙ
+((LAMBDA (X) X) 'ATOM) |$\rightarrow$| ATOM
+((LAMBDA (Y) Y) 'LIST) |$\rightarrow$| LIST
+((LAMBDA (J) (CAR J)) '(ТРЕХ ЭЛЕМЕНТНЫЙ ЛИСТ)) |$\rightarrow$| ТРЕХ
+((LAMBDA (K) (CDR K)) '(ТРЕХ ЭЛЕМЕНТНЫЙ ЛИСТ)) |$\rightarrow$| (ЭЛЕМЕНТНЫЙ ЛИСТ)
+((LAMBDA (U V) (CONS U V)) 'VERY 'GOOD) |$\rightarrow$| (VERY . GOOD)
+((LAMBDA (Y X) (CONS Y X)) 'ОДИН '(ПОТОМ . ДРУГОЙ)) |$\rightarrow$| (ОДИН ПОТОМ . ДРУГОЙ)
+((LAMBDA (A) (CAADR A)) '(A (B . |77Q2|))) |$\rightarrow$| B
+((LAMBDA (ПЕРЕМЕННАЯ) (CDAR ПЕРЕМЕННАЯ)) '((A B))) |$\rightarrow$| (B)
+((LAMBDA (J) 3.14159) NIL) |$\rightarrow$| 3.14159
+((LAMBDA (J) 3.14159) '()) |$\rightarrow$| 3.14159
+((LAMBDA (J) 3.14159) 55) |$\rightarrow$| 3.14159
+((LAMBDA () 3.14159)) |$\rightarrow$| 3.14159
+((LAMBDA (U V) U) 'ALPHA 'BETA) |$\rightarrow$| ALPHA
+((LAMBDA (U V) U) 'BETA 'ALPHA) |$\rightarrow$| BETA
+((LAMBDA (U V) V) 'ALPHA 'BETA) |$\rightarrow$| BETA
+((LAMBDA (V U) V) 'ALPHA 'BETA) |$\rightarrow$| ALPHA
+((LAMBDA (ПЕРВЫЙ ВТОРОЙ) (CAR ПЕРВЫЙ)) '(ПЕРВЫЙ) 'ВТОРОЙ) |$\rightarrow$| ПЕРВЫЙ
 \end{minted}
 
 \end{document}
