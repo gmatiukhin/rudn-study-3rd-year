@@ -66,15 +66,18 @@ However, when it comes to tightly-coupled agents' tasks, MAP has been relegated 
 
 \subsection{The aim of this paper}
 
-This paper presents a general-purpose MAP capable to efficiently handle planning problems with any level of coupling between agents.
-We propose a cooperative refinement planning approach, built upon the partial-order planning paradigm, that allows agents to work with incomplete information and to have incomplete views of the world, i.e.
+The aim of this paper is to showcase a general-purpose MAP capable to efficiently handle planning problems with any level of coupling between agents.
+Our goal is to develop a cooperative refinement planning approach, built upon the partial-order planning paradigm, that allows agents to work with incomplete information and to have incomplete views of the world, i.e.
 being ignorant of other agents' information, as well as maintaining their own private information.
 
-Similar to \cite{Jonsson2011ScalingUM}, we use an iterative planning refinement procedure that uses single-agent planning technology.
-Particularly, our model builds upon a partial-order planning (POP) paradigm, which also allow us to represent a collection of acting entities as a single agent.
-POP is a very suitable approach for centralized MAP with a small number of coordination points between agents \cite{Kvarnstrm2010PlanningFL}, and the application of a multi-agent POP refinement framework also reveals as a very appropriate mechanism to address tightly-coupled problems.
+We would like to use an iterative planning refinement procedure that uses single-agent planning technology, similar to \cite{Jonsson2011ScalingUM}.
+Particularly, we want our model to build upon a partial-order planning (POP) paradigm, which would also allow us to represent a collection of acting entities as a single agent.
+We believe that POP is a very suitable approach for centralized MAP with a small number of coordination points between agents \cite{Kvarnstrm2010PlanningFL}, and the application of a multi-agent POP refinement framework also reveals as a very appropriate mechanism to address tightly-coupled problems.
 
-Another objective of this paper is to present an overview of the already-existing approaches to the distributed MAP, as it is imperative to the understanding of the algorithm presented in the later part of this paper.
+In order to reach our goal we need to firstly review the literature on the subject of MAP. We want to present an overview of the already-existing approaches to the distributed MAP, as it would be imperative to the understanding of the algorithm presented in the later parts of this paper.
+Secondly, we need to formulate the mathematical basis for our distributed domain model and the algorithm itself.
+Thirdly, we would implement our domain model and the algorithm in a programming language.
+Lastly, we would review the soundness and completeness of our algorithm in order to find any of its shortcomings and conclude the paper.
 
 \subsection{Chapter outline}
 
@@ -325,7 +328,7 @@ Under complete information, threats on a MA concurrent plan will be correctly de
 In our incomplete information model, we should study how visibility over fluents affects the detection of threats.
 
 Let $\prod$ be a MA concurrent plan and let $\langle v,d_1\rangle$ be a fluent in a causal link $cl \in CL(\prod)$.
-Suppose that an agent $i$ builds a refinement $\prod'$ over $\prod$ that adds a new action at to the plan which is not ordered with respect to $cl$ and has an effect $(v = d2)$.
+Suppose that an agent $i$ builds a refinement $\prod'$ over $\prod$ that adds a new action to the plan which is not ordered with respect to $cl$ and has an effect $(v = d2)$.
 This effect causes a threat over $cl$ as it conflicts with $\langle v,d_1\rangle$.
 For $\prod'$ to be sound, agent $i$ should be able to detect such a threat whatever visibility it has over the fluent $\langle v,d_1\rangle$:
 
@@ -353,7 +356,11 @@ The ability to define incomplete views of the world for the agents allows us to 
 The MAP resolution process is a POP-based refinement planning approach that iteratively combines planning and coordination while maintaining for each agent only the information that is visible to the planning entity.
 This POP approach centered around the gradual construction of a joint solution plan for the MAP task highly benefits the resolution of cooperative distributed planning problems.
 
-We can conclude that our algorithm is an efficient, domain-independent and general-purpose framework to solve MAP problems.
+We can conclude that our algorithm is a sound, domain-independent and general-purpose framework to solve MAP problems.
+
+Future work is needed to address the problem of completeness of the algorithm.
+For example, one way to reduce the number of refinements needed, and therefore remove their pruning,
+would be to develop a better set of heuristics to guide the refinement process.
 
 \newpage
 \printbibliography
