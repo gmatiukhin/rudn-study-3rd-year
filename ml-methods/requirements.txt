@@ -1,0 +1,7 @@
+jupyter
+tensorflow
+pandas
+numpy
+matplotlib
+tfds-nightly
+jupyterlab-vim
