@@ -1,7 +1,8 @@
 jupyter
 tensorflow
+tensorflow_datasets
 pandas
 numpy
 matplotlib
-tfds-nightly
 jupyterlab-vim
+ipympl
