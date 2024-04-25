@@ -6,3 +6,4 @@ numpy
 matplotlib
 jupyterlab-vim
 ipympl
+scikit-learn
