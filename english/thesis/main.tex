@@ -9,6 +9,8 @@
 \usepackage{csquotes}
 \usepackage{datetime2}
 \usepackage{float}
+\usepackage{graphicx}
+\usepackage{multirow}
 
 \usepackage[backend=biber]{biblatex}
 
@@ -66,18 +68,17 @@ However, when it comes to tightly-coupled agents' tasks, MAP has been relegated 
 
 \subsection{The aim of this paper}
 
-The aim of this paper is to showcase a general-purpose MAP capable to efficiently handle planning problems with any level of coupling between agents.
-Our goal is to develop a cooperative refinement planning approach, built upon the partial-order planning paradigm, that allows agents to work with incomplete information and to have incomplete views of the world, i.e.
-being ignorant of other agents' information, as well as maintaining their own private information.
-
+The aim of this paper is to develop a general-purpose MAP capable to efficiently handle planning problems with any level of coupling between agents.
 We would like to use an iterative planning refinement procedure that uses single-agent planning technology, similar to \cite{Jonsson2011ScalingUM}.
-Particularly, we want our model to build upon a partial-order planning (POP) paradigm, which would also allow us to represent a collection of acting entities as a single agent.
+Particularly, we want our model to build upon a partial-order planning (POP) paradigm, that allows agents to work with incomplete information and to have incomplete views of the world, i.e.
+being ignorant of other agents' information, as well as maintaining their own private information.
+This would also allow us to represent a collection of acting entities as a single agent.
 We believe that POP is a very suitable approach for centralized MAP with a small number of coordination points between agents \cite{Kvarnstrm2010PlanningFL}, and the application of a multi-agent POP refinement framework also reveals as a very appropriate mechanism to address tightly-coupled problems.
 
 In order to reach our goal we need to firstly review the literature on the subject of MAP. We want to present an overview of the already-existing approaches to the distributed MAP, as it would be imperative to the understanding of the algorithm presented in the later parts of this paper.
-Secondly, we need to formulate the mathematical basis for our distributed domain model and the algorithm itself.
+Secondly, we need to formulate the mathematical basis for our distributed domain model and the MAP algorithm itself.
 Thirdly, we would implement our domain model and the algorithm in a programming language.
-Lastly, we would review the soundness and completeness of our algorithm in order to find any of its shortcomings and conclude the paper.
+Lastly, we would review the soundness and completeness of our algorithm in order to find any of its shortcomings.
 
 \subsection{Chapter outline}
 
@@ -87,6 +88,7 @@ In the section "Multi-agent planning model" we present a specification of a MAP 
 We discuss the terminolgy and the math used, as well as introduce the idea of partial visibility of information.
 The next section, titled "Refinement planning algorithm" describes the POP refinement approach and the refinement planning algorithm carried out by the agents.
 In the next section, we discuss the soundness and completeness of the proposed algorithm.
+In the penultimate section we will compare :the performance and scalability of our MAP-POP approach with another state-of-the-art MAP system.
 Finally, we conclude and outline the future lines of research and potential applications of the findings presented in this paper.
 
 \section{Related work: historical background on MAP}
@@ -348,6 +350,134 @@ Hence, we are implicitly pruning the refinement search space.
 Nevertheless, agents rely on an $A^\ast$ POP search process to build the refinement plans, which in most cases returns good refinement plans that guide the MAP algorithm towards a solution plan.
 The empirical results shown in the next section confirm our claim.
 
+\section{Experimental results}
+
+We designed and executed a set of tests to compare the performance and scalability of
+our MAP-POP approach with another state-of-the-art MAP system.
+Comparing the performance of multi-agent planning systems is not an easy task due to two main reasons.
+First, most MAP approaches are not general-purpose but domain-dependent systems specifically designed
+to address a particular problem, most typically traffic control or real-time planning applications.
+Second, unlike single-agent planners that have been promoted and populated through the celebration of the
+International Planning Competitions (IPC) and, therefore, have been made publicly available,
+it is difficult to find a multi-agent planner able to run the benchmark domains and planning problem
+suites created for the IPCs. Despite these drawbacks, we could assess the performance of MAP-POP
+and compare the results with those obtained in the Planning First approach presented in \cite{7d175e0276cb49c2bb75a5844ae4b1b2}.
+Planning First is a MAP system that also makes use of single-agent planning technology.
+More precisely, it builds upon a single-agent state-based planner,
+and handles agent coordination by solving a distributed CSP.
+
+The tests presented here involve three of the benchmark domains used on the IPCs:
+\textit{satellite}, \textit{rovers} and \textit{logistics},
+which are the domains used in the results presented in \cite{7d175e0276cb49c2bb75a5844ae4b1b2} as well.
+These domains give rise to problems of different coupling levels.
+The \textit{satellite} problems are LCP as the different agents (the satellites)
+are not likely to interact with each other;
+they move, calibrate their instruments and take images by themselves.
+\textit{Rovers} problems tend to present a medium coupling level:
+rover agents are independent but they have access to certain shared resources in their environment,
+namely the rock and soil samples they collect and analyze.
+The \textit{logistics} problems fall into the TCP category since agents (trucks and planes)
+have to cooperate to transport the different packages to the target locations
+and problems present several coordination points (locations) at which agents can interact.
+
+Table \ref{tab:1} shows the results when comparing the quality of the solution plans
+obtained with MAP-POP and Planning First and the execution times.
+The quality of the solution plans is assessed through three parameters:
+a) the number of actions of the plan;
+b) the duration of the plan, i.e. the number of time units or time steps required to execute the plan;
+and c) the number of agents that take part in the solution plan.
+This latter parameter gives an idea of how the effort on solving the problem
+has been distributed among the agents.
+
+\begin{table}
+  \caption{Performance comparison between MAP-POP and Planning First}
+  \label{tab:1}
+  \centering
+  \resizebox{\linewidth}{!}{%
+    \begin{tabular}{|c|c|c|c||r|r|r|r||r|r|r|r|}
+    \hline
+    \multicolumn{1}{|c|}{\multirow{2}{*}{Problem}} & \multicolumn{1}{c|}{\multirow{2}{*}{\#Agents}} & \multicolumn{1}{c|}{\multirow{2}{*}{\%Coupling level}} & \multicolumn{1}{c||}{\multirow{2}{*}{\#Domain actions}} & \multicolumn{4}{c||}{MAP-POP} & \multicolumn{4}{c|}{Planning First} \\
+    \cline{5-12}
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c||}{} & \multicolumn{1}{c|}{\#Acts} & \multicolumn{1}{c|}{\#TS} & \multicolumn{1}{c|}{\#Parties} & \multicolumn{1}{c||}{Time} & \multicolumn{1}{c|}{\#Acts} & \multicolumn{1}{c|}{\#TS} & \multicolumn{1}{c|}{\#Partics} & \multicolumn{1}{c|}{Time} \\ 
+    \hline\hline
+    IPCSat1 & 1 & 1.2 & 54 & 9 & 8 & 1 & 0.23 & 10 & 9 & 1 & 0.14 \\ 
+    \hline\hline
+    IPCSat2 & 2 & 29.3 & 2082 & 21 & 11 & 2 & 18.8 &  &  &  & $\dagger$ \\ 
+    \hline\hline
+    IndSat1 & 2 & 5.2 & 40 & 9 & 4 & 2 & 0.83 & 9 & 4 & 2 & 0.16 \\
+    \hline
+    IndSat2 & 4 & 1.4 & 274 & 14 & 3 & 4 & 2.2 & 14 & 4 & 4 & 0.31 \\ 
+    \hline\hline
+    IPCRov1 & 1 & 1.2 & 81 & 10 & 7 & 1 & 0.344 & 11 & 7 & 1 & 0.359 \\
+    \hline
+    IPCRov2 & 1 & 2.3 & 45 & 8 & 4 & 1 & 0.39 & 9 & 5 & 1 & 0.312 \\ 
+    \hline\hline
+    IndRov1 & 2 & 45.5 & 160 & 24 & 11 & 2 & 3.609 & 22 & 7 & 2 & 2.75 \\
+    \hline
+    IndRov2 & 3 & 45.5 & 239 & 36 & 11 & 3 & 5.5 & 33 & 7 & 3 & 12.141 \\ 
+    \hline\hline
+    IPCLog2 & 3 & 20 & 52 & 27 & 9 & 3 & 18.187 &  &  &  & $\dagger$ \\ 
+    \hline\hline
+    IndLog1 & 3 & 44.4 & 20 & 6 & 6 & 2 & 1.579 & 9 & 8 & 3 & 0.578 \\
+    \hline
+    \end{tabular}
+  }
+\end{table}
+
+Problems labeled with \textit{IPC} are directly taken from the IPC benchmarks,
+while problems labeled with \textit{Ind} are the extra set of independent problems
+we created to assess Planning First performance.
+We show the results of several out of the 20 IPC problems we tested as well as 2 independent problems.
+The next three columns in the table show the difficulty of the planning problems:
+\textit{\#Agents} indicates the number of agents involved in the problem;
+\textit{\%Coupling} level estimates the coupling level of the problem as
+the average rate of instantiated public actions of agents,
+and \textit{\#Domain} actions refers to the total number of instanced actions.
+The results for each planner include the number of actions(\textit{\#Acts})
+and time steps (\textit{\#TS}) of the solution plan, respectively.
+\textit{\#Partics} indicates the number of agents that take part in the solution plan,
+and \textit{Time} shows the total execution time.
+A dagger ($\dagger$) indicates that Planning First was not able to solve the problem
+
+For the most loosely-coupled problems, the satellite domain,
+MAP-POP exhibited an excellent performance as our results confirmed that it was able to
+solve 18 out of 20 IPC problems.
+Although the IPC satellite problems do not present a high coupling level
+(less than 30\% of public actions in the worst case),
+Planning First only solves the first IPC problem,
+as these problems require cooperation among agents and it is more necessary for larger instances.
+
+With respect to the rovers domain, our results confirmed that
+MAP-POP solves 15 out of the 20 IPC problems for this domain.
+We can see the workload in this domain is better distributed than in the satellite domain
+as most of the agents participate in the solution plan,
+which considerably reduces the duration of the plan.
+Planning First solves only the two smallest IPC problems.
+
+Finally, the logistics domain has proven to be the most complex one for both multi-agent approaches.
+Agents in this domain are trucks and airplanes
+that must cooperate in most of the cases to transport packages.
+Hence, solutions for these problems are more costly than in the rovers and satellite domains,
+as they require agent coordination, an important feature to determine the efficiency of a MAP approach.
+Our results confirmed that MAP-POP loses performance in this domain,
+being able to solve only 9 out of 20 IPC problems.
+However, it distributes the workload effectively
+since all of the agents participate in all the solution plans obtained.
+Planning First shows also a poorer performance in this domain
+as it is not able to solve any of the IPC problems.
+These results are in line with the conclusions exposed in \cite{7d175e0276cb49c2bb75a5844ae4b1b2},
+which reveals the difficulty of a CSP-based approach
+to deal efficiently with problems that exhibit a high level of inter-agent interaction.
+
+In conclusion, MAP-POP proves to be a more robust approach than Planning First
+as it can tackle larger and more complex planning problems.
+Moreover, while Planning First is designed for solving LCP,
+MAP-POP is a general-purpose method that tackles problems of different coupling levels.
+Although MAP-POP behaves better in LCP problems, it can also solve complex TCP problems.
+Scalability results show that Planning First performs better when dealing with simple problems
+that involve few agents.
+However, MAP-POP scales up far better, being able to solve much larger planning problems.
+
 \section{Conclusions and future work}
 
 This paper presents a general-purpose MAP model suitable to cope with a wide variety of MA planning domains under incomplete information.
@@ -356,7 +486,7 @@ The ability to define incomplete views of the world for the agents allows us to 
 The MAP resolution process is a POP-based refinement planning approach that iteratively combines planning and coordination while maintaining for each agent only the information that is visible to the planning entity.
 This POP approach centered around the gradual construction of a joint solution plan for the MAP task highly benefits the resolution of cooperative distributed planning problems.
 
-We can conclude that our algorithm is a sound, domain-independent and general-purpose framework to solve MAP problems.
+Based on the experimental results we can conclude that our algorithm is a sound, domain-independent and general-purpose framework to solve MAP problems.
 
 Future work is needed to address the problem of completeness of the algorithm.
 For example, one way to reduce the number of refinements needed, and therefore remove their pruning,

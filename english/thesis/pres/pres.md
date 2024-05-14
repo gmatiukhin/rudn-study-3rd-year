@@ -185,6 +185,130 @@ $(v = d_2)$ &mdash; угроза $\prod$, так как является кон�
 
 ---
 
+## Сравнение
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg th{border-color:black;border-style:double solid;border-width:3px 1px;font-family:Noto Sans;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Noto Sans;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .hdr-big{border-color:inherit;text-align:center;vertical-align:center}
+.tg .hdr-med{border-color:inherit;text-align:center;vertical-align:center;border-style:double solid solid;border-width: 3px 1px 1px}
+.tg .hdr-small{border-color:inherit;text-align:center;vertical-align:center;border-style:solid solid double;border-width: 1px 1px 3px}
+.tg .tg-val{border-color:inherit;text-align:right;vertical-align:center}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="hdr-big" rowspan="2">Problem</th>
+    <th class="hdr-big" rowspan="2">#Agents</th>
+    <th class="hdr-big" rowspan="2">%Coupling level</th>
+    <th class="hdr-big" rowspan="2">#Domain actions</th>
+    <th class="hdr-med" colspan="4">MAP-POP</th>
+    <th class="hdr-med" colspan="4">Planning First</th>
+  </tr>
+  <tr>
+    <th class="hdr-small">#Acts</th>
+    <th class="hdr-small">#TS</th>
+    <th class="hdr-small">#Partics</th>
+    <th class="hdr-small">Time</th>
+    <th class="hdr-small">#Acts</th>
+    <th class="hdr-small">#TS</th>
+    <th class="hdr-small">#Parties</th>
+    <th class="hdr-small">Time</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="hdr-big">IPCSat2</td>
+    <td class="hdr-big">2</td>
+    <td class="hdr-big">29.3</td>
+    <td class="hdr-big">2082</td>
+    <td class="tg-val">21</td>
+    <td class="tg-val">11</td>
+    <td class="tg-val">2</td>
+    <td class="tg-val">18.8</td>
+    <td class="tg-val"></td>
+    <td class="tg-val"></td>
+    <td class="tg-val"></td>
+    <td class="tg-val">&dagger;</td>
+  </tr>
+  <tr style="border-bottom: 3px double;">
+    <td class="hdr-big">IndSat1</td>
+    <td class="hdr-big">2</td>
+    <td class="hdr-big">5.2</td>
+    <td class="hdr-big">40</td>
+    <td class="tg-val">9</td>
+    <td class="tg-val">4</td>
+    <td class="tg-val">2</td>
+    <td class="tg-val">0.83</td>
+    <td class="tg-val">9</td>
+    <td class="tg-val">4</td>
+    <td class="tg-val">2</td>
+    <td class="tg-val">0.16</td>
+  </tr>
+  <tr>
+    <td class="hdr-big">IPCRov2</td>
+    <td class="hdr-big">1</td>
+    <td class="hdr-big">2.3</td>
+    <td class="hdr-big">45</td>
+    <td class="tg-val">8</td>
+    <td class="tg-val">4</td>
+    <td class="tg-val">1</td>
+    <td class="tg-val">0.39</td>
+    <td class="tg-val">9</td>
+    <td class="tg-val">5</td>
+    <td class="tg-val">1</td>
+    <td class="tg-val">0.312</td>
+  </tr>
+  <tr style="border-bottom: 3px double;">
+    <td class="hdr-big">IndRov2</td>
+    <td class="hdr-big">3</td>
+    <td class="hdr-big">45.5</td>
+    <td class="hdr-big">239</td>
+    <td class="tg-val">36</td>
+    <td class="tg-val">11</td>
+    <td class="tg-val">3</td>
+    <td class="tg-val">5.5</td>
+    <td class="tg-val">33</td>
+    <td class="tg-val">7</td>
+    <td class="tg-val">3</td>
+    <td class="tg-val">12.141</td>
+  </tr>
+  <tr>
+    <td class="hdr-big">IPCLog2</td>
+    <td class="hdr-big">3</td>
+    <td class="hdr-big">20</td>
+    <td class="hdr-big">52</td>
+    <td class="tg-val">27</td>
+    <td class="tg-val">9</td>
+    <td class="tg-val">3</td>
+    <td class="tg-val">18.187</td>
+    <td class="tg-val"></td>
+    <td class="tg-val"></td>
+    <td class="tg-val"></td>
+    <td class="tg-val">&dagger;</td>
+  </tr>
+  <tr>
+    <td class="hdr-big">IndLog1</td>
+    <td class="hdr-big">3</td>
+    <td class="hdr-big">44.4</td>
+    <td class="hdr-big">20</td>
+    <td class="tg-val">6</td>
+    <td class="tg-val">6</td>
+    <td class="tg-val">2</td>
+    <td class="tg-val">1.579</td>
+    <td class="tg-val">9</td>
+    <td class="tg-val">8</td>
+    <td class="tg-val">3</td>
+    <td class="tg-val">0.578</td>
+  </tr>
+</tbody>
+</table>
+
+---
+
 ## Вывод
 
 Мы можем заключить, что наш алгоритм представляет собой надежную и универсальную основу для решения задач мультиагентного планирования.
