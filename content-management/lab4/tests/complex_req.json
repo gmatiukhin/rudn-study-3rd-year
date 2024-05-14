@@ -1,0 +1,11 @@
+{
+  "v": "5.199",
+  "access_token": "supersecret",
+  "title": "My album title",
+  "group_id": 2123,
+  "description": "Photos of me",
+  "privacy_view": [
+    "me",
+    "you"
+  ]
+}

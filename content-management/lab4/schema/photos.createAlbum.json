@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "v": {
+      "type": "string",
+      "description": "Версия используемого API",
+      "const": "5.199"
+    },
+    "access_token": {
+      "type": "string",
+      "description": "Токен доступа (должен быть пользовательский)"
+    },
+    "title": {
+      "description": "Album title.",
+      "type": "string",
+      "minLength": 1
+    },
+    "group_id": {
+      "description": "ID of the community in which the album will be created.",
+      "type": "integer",
+      "format": "int64",
+      "entity": "owner"
+    },
+    "description": {
+      "description": "Album description.",
+      "type": "string"
+    },
+    "privacy_view": {
+      "type": "array",
+      "default": "all",
+      "items": {
+        "type": "string"
+      }
+    },
+    "privacy_comment": {
+      "type": "array",
+      "default": "all",
+      "items": {
+        "type": "string"
+      }
+    },
+    "upload_by_admins_only": {
+      "type": "boolean"
+    },
+    "comments_disabled": {
+      "type": "boolean"
+    }
+  },
+  "required": ["v", "access_token", "title"]
+}

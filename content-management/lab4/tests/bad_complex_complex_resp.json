@@ -1,0 +1,18 @@
+{
+  "response": {
+    "title": "My album title",
+    "id": 12345,
+    "owner_id": 123456,
+    "size": 1,
+    "can_upload": true,
+    "created": 0,
+    "can_include_to_feed": false,
+    "sizes": [
+      {
+        "height": 512,
+        "width": 512,
+        "type": "who"
+      }
+    ]
+  }
+}

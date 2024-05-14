@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "height": {
+      "type": "integer",
+      "description": "Height in px",
+      "minimum": 0
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the image"
+    },
+    "src": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the image"
+    },
+    "type": {
+      "type": "string",
+      "description": "Size type",
+      "enum": [
+        "t",
+        "s",
+        "m",
+        "x",
+        "o",
+        "p",
+        "q",
+        "r",
+        "k",
+        "l",
+        "y",
+        "z",
+        "c",
+        "w",
+        "a",
+        "b",
+        "e",
+        "i",
+        "d",
+        "j",
+        "temp",
+        "h",
+        "g",
+        "n",
+        "f",
+        "max",
+        "base",
+        "u",
+        "v",
+        "orig"
+      ]
+    },
+    "width": {
+      "type": "integer",
+      "description": "Width in px",
+      "minimum": 0
+    }
+  },
+  "required": ["height", "type", "width"]
+}

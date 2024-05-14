@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "can_upload": {
+      "description": "Information whether current user can upload photo to the album",
+      "type": "boolean"
+    },
+    "comments_disabled": {
+      "description": "Information whether album comments are disabled",
+      "type": "boolean"
+    },
+    "created": {
+      "type": "integer",
+      "description": "Date when the album has been created in Unixtime, not set for system albums",
+      "minimum": 0
+    },
+    "description": {
+      "type": "string",
+      "description": "Photo album description"
+    },
+    "can_delete": {
+      "type": "boolean",
+      "description": "album can delete"
+    },
+    "id": {
+      "type": "integer",
+      "description": "Photo album ID"
+    },
+    "can_include_to_feed": {
+      "type": "boolean",
+      "description": "album can be selected to feed"
+    },
+    "is_locked": {
+      "type": "boolean",
+      "description": "Need show privacy lock at album"
+    },
+    "owner_id": {
+      "type": "integer",
+      "description": "Album owner's ID",
+      "entity": "owner",
+      "format": "int64"
+    },
+    "size": {
+      "type": "integer",
+      "description": "Photos number",
+      "minimum": 0
+    },
+    "sizes": {
+      "type": "array",
+      "items": {
+        "$ref": "photo_sizes.json"
+      }
+    },
+    "thumb_id": {
+      "type": "integer",
+      "description": "Thumb photo ID",
+      "minimum": 0
+    },
+    "thumb_is_last": {
+      "description": "Information whether the album thumb is last photo",
+      "type": "boolean"
+    },
+    "thumb_src": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the thumb image"
+    },
+    "title": {
+      "type": "string",
+      "description": "Photo album title"
+    },
+    "updated": {
+      "type": "integer",
+      "description": "Date when the album has been updated last time in Unixtime, not set for system albums",
+      "minimum": 0
+    },
+    "upload_by_admins_only": {
+      "description": "Information whether only community administrators can upload photos",
+      "type": "boolean"
+    }
+  },
+  "required": ["title", "id", "owner_id", "size"]
+}

@@ -1,0 +1,8 @@
+{
+  "response": {
+    "title": "My album title",
+    "id": 12345,
+    "owner_id": 123456,
+    "size": 1
+  }
+}
