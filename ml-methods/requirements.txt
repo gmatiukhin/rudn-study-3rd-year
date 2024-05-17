@@ -7,3 +7,4 @@ matplotlib
 jupyterlab-vim
 ipympl
 scikit-learn
+pillow
