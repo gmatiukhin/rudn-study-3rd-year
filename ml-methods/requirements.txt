@@ -8,3 +8,4 @@ jupyterlab-vim
 ipympl
 scikit-learn
 pillow
+seaborn
